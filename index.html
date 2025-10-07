@@ -1,0 +1,1925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATT&CK Forensic Evidence Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ===== CSS Variables ===== */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --gray-color: #95a5a6;
+            --text-color: #333;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e1e8ed;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        /* ===== Base Styles ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--secondary-color);
+            transition: var(--transition);
+        }
+
+        a:hover {
+            color: var(--primary-color);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-color);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* ===== Header Styles ===== */
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            font-size: 24px;
+            color: var(--secondary-color);
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .nav ul {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .nav-link.active, .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .admin-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .admin-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* ===== Main Content Styles ===== */
+        .main-content {
+            padding: 30px 0;
+            min-height: calc(100vh - 140px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            color: var(--primary-color);
+        }
+
+        .section-header p {
+            color: var(--gray-color);
+            font-size: 1.1rem;
+        }
+
+        /* ===== Dashboard Styles ===== */
+        .dashboard-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .dashboard-header h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .dashboard-header p {
+            font-size: 1.2rem;
+            color: var(--gray-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--secondary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .stat-info p {
+            margin: 0;
+            color: var(--gray-color);
+        }
+
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .content-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+        }
+
+        .content-card h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary-color);
+        }
+
+        .technique-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .technique-item {
+            padding: 15px;
+            border-left: 4px solid var(--secondary-color);
+            background-color: var(--light-color);
+            border-radius: 4px;
+        }
+
+        .technique-item h4 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .technique-item p {
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .evidence-categories {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .category {
+            padding: 15px;
+            border-radius: 6px;
+            background-color: var(--light-color);
+            transition: var(--transition);
+        }
+
+        .category:hover {
+            background-color: #dfe6e9;
+        }
+
+        .category h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .category p {
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        /* ===== Techniques Tab Styles ===== */
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-color);
+        }
+
+        .search-box input {
+            padding-left: 45px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .techniques-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .technique-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .technique-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .technique-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+        }
+
+        .technique-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .technique-header .technique-id {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .technique-body {
+            padding: 20px;
+        }
+
+        .technique-section {
+            margin-bottom: 15px;
+        }
+
+        .technique-section h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            color: var(--secondary-color);
+            font-size: 1rem;
+        }
+
+        .technique-section p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .technique-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .tactic-badge, .platform-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .tactic-badge {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+        }
+
+        .platform-badge {
+            background-color: #e8f4fc;
+            color: var(--secondary-color);
+        }
+
+        /* ===== Evidence Matrix Styles ===== */
+        .matrix-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 30px;
+        }
+
+        .matrix-sidebar {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        .matrix-sidebar h3 {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary-color);
+        }
+
+        #evidence-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .evidence-item {
+            padding: 10px;
+            border-radius: 4px;
+            background-color: var(--light-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .evidence-item.active, .evidence-item:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .matrix-main {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .matrix-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        #evidence-matrix {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #evidence-matrix th, #evidence-matrix td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #evidence-matrix th {
+            background-color: var(--light-color);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        #evidence-matrix tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        .evidence-cell {
+            text-align: center;
+        }
+
+        .evidence-present {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .evidence-absent {
+            color: var(--gray-color);
+        }
+
+        /* ===== Controls Tab Styles ===== */
+        .controls-container {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 30px;
+        }
+
+        .controls-sidebar {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        .controls-sidebar h3 {
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary-color);
+        }
+
+        .controls-sidebar ul {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-category {
+            display: block;
+            padding: 10px 15px;
+            border-radius: 4px;
+            transition: var(--transition);
+        }
+
+        .control-category.active, .control-category:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .controls-main {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 20px;
+        }
+
+        .control-item {
+            padding: 20px;
+            border-left: 4px solid var(--secondary-color);
+            background-color: var(--light-color);
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .control-item h4 {
+            margin: 0 0 10px;
+            color: var(--primary-color);
+        }
+
+        .control-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .control-type {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .control-type.preventive {
+            background-color: #e8f6f3;
+            color: var(--success-color);
+        }
+
+        .control-type.detective {
+            background-color: #fef9e7;
+            color: var(--warning-color);
+        }
+
+        .control-type.corrective {
+            background-color: #fdedec;
+            color: var(--accent-color);
+        }
+
+        .control-type.logging {
+            background-color: #eaf2f8;
+            color: var(--secondary-color);
+        }
+
+        .control-technique {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .control-description {
+            margin-bottom: 15px;
+        }
+
+        .audit-question {
+            padding: 15px;
+            background-color: white;
+            border-radius: 4px;
+            border-left: 4px solid var(--warning-color);
+        }
+
+        .audit-question h5 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 10px;
+            color: var(--warning-color);
+        }
+
+        /* ===== Admin Panel Styles ===== */
+        .admin-panel {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 80%;
+            max-width: 800px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .admin-header h2 {
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .close-btn {
+            background: none;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .admin-tabs {
+            display: flex;
+            background-color: var(--light-color);
+        }
+
+        .admin-tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .admin-tab.active {
+            background-color: white;
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        .admin-content {
+            padding: 20px;
+        }
+
+        .admin-tab-content {
+            display: none;
+        }
+
+        .admin-tab-content.active {
+            display: block;
+        }
+
+        .admin-form {
+            max-width: 100%;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .form-group small {
+            display: block;
+            margin-top: 5px;
+            color: var(--gray-color);
+            font-size: 0.8rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .admin-search {
+            margin-bottom: 20px;
+        }
+
+        .admin-techniques-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .admin-technique-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: 4px;
+        }
+
+        .admin-technique-info h4 {
+            margin: 0;
+            color: var(--primary-color);
+        }
+
+        .admin-technique-info p {
+            margin: 5px 0 0;
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .admin-technique-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .edit-btn {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* ===== Modal Styles ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* ===== Footer Styles ===== */
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 40px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h3, .footer-section h4 {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .footer-section ul {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .footer-section a {
+            color: var(--light-color);
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* ===== Responsive Styles ===== */
+        @media (max-width: 992px) {
+            .dashboard-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .matrix-container, .controls-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .techniques-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .admin-panel {
+                width: 100%;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <h1>ATT&CK Forensic Platform</h1>
+            </div>
+            <nav class="nav">
+                <ul>
+                    <li><a href="#" class="nav-link active" data-tab="dashboard">Dashboard</a></li>
+                    <li><a href="#" class="nav-link" data-tab="techniques">Techniques</a></li>
+                    <li><a href="#" class="nav-link" data-tab="evidence">Evidence Matrix</a></li>
+                    <li><a href="#" class="nav-link" data-tab="controls">Controls</a></li>
+                </ul>
+            </nav>
+            <div class="admin-section">
+                <button id="admin-toggle" class="admin-btn">
+                    <i class="fas fa-user-shield"></i> Admin Access
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Dashboard Tab -->
+            <section id="dashboard" class="tab-content active">
+                <div class="dashboard-header">
+                    <h2>Forensic Evidence Dashboard</h2>
+                    <p>Understanding ATT&CK techniques and their forensic evidence requirements</p>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-bug"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="techniques-count">0</h3>
+                            <p>ATT&CK Techniques</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="evidence-types-count">0</h3>
+                            <p>Evidence Types</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clipboard-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="controls-count">0</h3>
+                            <p>Security Controls</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="questions-count">0</h3>
+                            <p>Audit Questions</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-content">
+                    <div class="content-card">
+                        <h3>Recent Techniques</h3>
+                        <div id="recent-techniques" class="technique-list">
+                            <!-- Recent techniques will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="content-card">
+                        <h3>Evidence Categories</h3>
+                        <div class="evidence-categories">
+                            <div class="category">
+                                <h4><i class="fas fa-memory"></i> Memory Forensics</h4>
+                                <p>Analysis of RAM, processes, and runtime artifacts</p>
+                            </div>
+                            <div class="category">
+                                <h4><i class="fas fa-hdd"></i> Disk Forensics</h4>
+                                <p>File system analysis, deleted data recovery</p>
+                            </div>
+                            <div class="category">
+                                <h4><i class="fas fa-network-wired"></i> Network Forensics</h4>
+                                <p>Packet analysis, traffic patterns, connections</p>
+                            </div>
+                            <div class="category">
+                                <h4><i class="fas fa-file-contract"></i> Log Analysis</h4>
+                                <p>Event logs, application logs, security logs</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Techniques Tab -->
+            <section id="techniques" class="tab-content">
+                <div class="section-header">
+                    <h2>ATT&CK Techniques</h2>
+                    <p>Browse techniques and their forensic evidence requirements</p>
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="technique-search" placeholder="Search techniques by name, ID, or description...">
+                    </div>
+                </div>
+                
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="tactic-filter">Filter by Tactic:</label>
+                        <select id="tactic-filter">
+                            <option value="all">All Tactics</option>
+                            <option value="initial-access">Initial Access</option>
+                            <option value="execution">Execution</option>
+                            <option value="persistence">Persistence</option>
+                            <option value="privilege-escalation">Privilege Escalation</option>
+                            <option value="defense-evasion">Defense Evasion</option>
+                            <option value="credential-access">Credential Access</option>
+                            <option value="discovery">Discovery</option>
+                            <option value="lateral-movement">Lateral Movement</option>
+                            <option value="collection">Collection</option>
+                            <option value="exfiltration">Exfiltration</option>
+                            <option value="command-and-control">Command and Control</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="platform-filter">Filter by Platform:</label>
+                        <select id="platform-filter">
+                            <option value="all">All Platforms</option>
+                            <option value="windows">Windows</option>
+                            <option value="linux">Linux</option>
+                            <option value="macos">macOS</option>
+                            <option value="network">Network</option>
+                            <option value="cloud">Cloud</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div id="techniques-container" class="techniques-grid">
+                    <!-- Techniques will be loaded here -->
+                </div>
+            </section>
+
+            <!-- Evidence Matrix Tab -->
+            <section id="evidence" class="tab-content">
+                <div class="section-header">
+                    <h2>Evidence Matrix</h2>
+                    <p>Mapping techniques to required forensic evidence</p>
+                </div>
+                
+                <div class="matrix-container">
+                    <div class="matrix-sidebar">
+                        <h3>Evidence Types</h3>
+                        <ul id="evidence-list">
+                            <!-- Evidence types will be loaded here -->
+                        </ul>
+                    </div>
+                    
+                    <div class="matrix-main">
+                        <div class="matrix-table">
+                            <table id="evidence-matrix">
+                                <thead>
+                                    <tr>
+                                        <th>Technique</th>
+                                        <!-- Evidence type headers will be added dynamically -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Matrix rows will be added dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Controls Tab -->
+            <section id="controls" class="tab-content">
+                <div class="section-header">
+                    <h2>Security Controls & Audit Questions</h2>
+                    <p>Technical controls and audit questions for ATT&CK techniques</p>
+                </div>
+                
+                <div class="controls-container">
+                    <div class="controls-sidebar">
+                        <h3>Control Categories</h3>
+                        <ul>
+                            <li><a href="#" class="control-category active" data-category="all">All Controls</a></li>
+                            <li><a href="#" class="control-category" data-category="preventive">Preventive</a></li>
+                            <li><a href="#" class="control-category" data-category="detective">Detective</a></li>
+                            <li><a href="#" class="control-category" data-category="corrective">Corrective</a></li>
+                            <li><a href="#" class="control-category" data-category="logging">Logging</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="controls-main">
+                        <div id="controls-list">
+                            <!-- Controls will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Admin Panel (Hidden by default) -->
+            <section id="admin-panel" class="admin-panel">
+                <div class="admin-header">
+                    <h2><i class="fas fa-user-shield"></i> Admin Panel</h2>
+                    <button id="close-admin" class="close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="admin-tabs">
+                    <div class="admin-tab active" data-admin-tab="add-technique">Add Technique</div>
+                    <div class="admin-tab" data-admin-tab="manage-techniques">Manage Techniques</div>
+                </div>
+                
+                <div class="admin-content">
+                    <!-- Add Technique Form -->
+                    <div id="add-technique" class="admin-tab-content active">
+                        <h3>Add New ATT&CK Technique</h3>
+                        <form id="technique-form" class="admin-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="technique-id">Technique ID *</label>
+                                    <input type="text" id="technique-id" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="technique-name">Technique Name *</label>
+                                    <input type="text" id="technique-name" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="technique-tactic">Tactic *</label>
+                                    <select id="technique-tactic" required>
+                                        <option value="">Select Tactic</option>
+                                        <option value="initial-access">Initial Access</option>
+                                        <option value="execution">Execution</option>
+                                        <option value="persistence">Persistence</option>
+                                        <option value="privilege-escalation">Privilege Escalation</option>
+                                        <option value="defense-evasion">Defense Evasion</option>
+                                        <option value="credential-access">Credential Access</option>
+                                        <option value="discovery">Discovery</option>
+                                        <option value="lateral-movement">Lateral Movement</option>
+                                        <option value="collection">Collection</option>
+                                        <option value="exfiltration">Exfiltration</option>
+                                        <option value="command-and-control">Command and Control</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="technique-platform">Platform *</label>
+                                    <select id="technique-platform" required>
+                                        <option value="">Select Platform</option>
+                                        <option value="windows">Windows</option>
+                                        <option value="linux">Linux</option>
+                                        <option value="macos">macOS</option>
+                                        <option value="network">Network</option>
+                                        <option value="cloud">Cloud</option>
+                                        <option value="multi">Multiple</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="technique-description">Description</label>
+                                <textarea id="technique-description" rows="3"></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="forensic-evidence">Forensic Evidence Required *</label>
+                                <textarea id="forensic-evidence" rows="4" required></textarea>
+                                <small>List the specific forensic evidence needed to detect this technique</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="logging-control">Logging/Technical Control *</label>
+                                <textarea id="logging-control" rows="4" required></textarea>
+                                <small>Describe the logging and technical controls that can detect or prevent this technique</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="audit-question">Audit Question *</label>
+                                <textarea id="audit-question" rows="3" required></textarea>
+                                <small>Create an audit question to assess if controls are properly implemented</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="mitigation">Mitigation</label>
+                                <textarea id="mitigation" rows="3"></textarea>
+                                <small>Describe how to mitigate or prevent this technique</small>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-plus"></i> Add Technique
+                                </button>
+                                <button type="reset" class="btn btn-secondary">Reset Form</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Manage Techniques -->
+                    <div id="manage-techniques" class="admin-tab-content">
+                        <h3>Manage Existing Techniques</h3>
+                        <div class="admin-search">
+                            <input type="text" id="admin-technique-search" placeholder="Search techniques to manage...">
+                        </div>
+                        
+                        <div id="admin-techniques-list" class="admin-techniques-list">
+                            <!-- Admin techniques list will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Admin Authentication</h2>
+                <button id="close-login" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="admin-username">Username</label>
+                    <input type="text" id="admin-username" placeholder="Enter admin username">
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" placeholder="Enter admin password">
+                </div>
+                <div class="form-group">
+                    <button id="confirm-login" class="btn btn-primary">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Confirm Deletion</h2>
+                <button class="close-btn" id="close-delete">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this technique? This action cannot be undone.</p>
+                <div class="modal-actions">
+                    <button id="confirm-delete" class="btn btn-danger">Delete</button>
+                    <button id="cancel-delete" class="btn btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ATT&CK Forensic Platform</h3>
+                    <p>Helping organizations understand forensic evidence requirements for ATT&CK techniques</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">MITRE ATT&CK Framework</a></li>
+                        <li><a href="#">Forensic Best Practices</a></li>
+                        <li><a href="#">Incident Response Guide</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>security@organization.com</p>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 ATT&CK Forensic Platform. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample data for the platform
+        let techniques = [
+            {
+                id: "T1055",
+                name: "Process Injection",
+                tactic: "defense-evasion",
+                platform: "windows",
+                description: "Adversaries may inject code into processes to evade process-based defenses and elevate privileges.",
+                forensicEvidence: "Memory dumps, process analysis, API monitoring logs, event logs (4688, 4697), prefetch files",
+                loggingControl: "Process monitoring, command-line logging, DLL monitoring, Windows event logging (4688, 4697), Sysmon (Event ID 8, 10)",
+                auditQuestion: "Are processes monitored for unusual injection patterns? Is command-line logging enabled for all processes?",
+                mitigation: "Application whitelisting, execution prevention, anti-virus, endpoint detection and response"
+            },
+            {
+                id: "T1070",
+                name: "Indicator Removal on Host",
+                tactic: "defense-evasion",
+                platform: "multi",
+                description: "Adversaries may delete or alter generated artifacts to remove evidence of their presence or hinder defenses.",
+                forensicEvidence: "Event logs, file system artifacts, prefetch files, USN journal, registry hives, shellbags",
+                loggingControl: "Centralized logging, file integrity monitoring, Windows event logging (104, 1102, 1104), Sysmon (Event ID 13, 26)",
+                auditQuestion: "Are logs regularly reviewed for deletion or clearing events? Is file integrity monitoring implemented?",
+                mitigation: "Immutable logging, backup logs to secure location, restrict log deletion privileges"
+            },
+            {
+                id: "T1566",
+                name: "Phishing",
+                tactic: "initial-access",
+                platform: "multi",
+                description: "Adversaries may send phishing messages to gain access to victim systems.",
+                forensicEvidence: "Email headers, attachment analysis, URL analysis, browser history, download artifacts",
+                loggingControl: "Email filtering, web proxy logs, endpoint detection, browser extensions, DMARC/DKIM/SPF",
+                auditQuestion: "Are users trained to identify phishing attempts? Are email filtering controls in place?",
+                mitigation: "User awareness training, email filtering, multi-factor authentication, application allowlisting"
+            },
+            {
+                id: "T1021",
+                name: "Remote Services",
+                tactic: "lateral-movement",
+                platform: "windows",
+                description: "Adversaries may use remote services to move between systems in a network.",
+                forensicEvidence: "Event logs (4624, 4625, 4648), RDP session logs, network connections, authentication logs",
+                loggingControl: "Network monitoring, authentication logging, Windows event logging (4624, 4625, 4648), RDP session logging",
+                auditQuestion: "Are remote access attempts monitored and logged? Are failed authentication attempts reviewed?",
+                mitigation: "Network segmentation, multi-factor authentication, account use policies, privileged access management"
+            },
+            {
+                id: "T1003",
+                name: "OS Credential Dumping",
+                tactic: "credential-access",
+                platform: "windows",
+                description: "Adversaries may attempt to dump credentials to obtain account login and credential material.",
+                forensicEvidence: "Memory dumps, LSASS process memory, registry hives, event logs (4688), antivirus logs",
+                loggingControl: "Credential Guard, LSA protection, Windows event logging (4688), Sysmon (Event ID 10), antivirus",
+                auditQuestion: "Are protections like Credential Guard enabled? Is access to LSASS monitored?",
+                mitigation: "Credential Guard, LSA protection, restricted admin mode, privileged access management"
+            }
+        ];
+
+        // Admin password (in a real application, this would be handled server-side)
+        const ADMIN_PASSWORD = "admin123";
+        
+        // Current state
+        let isAdmin = false;
+        let currentTechniqueToDelete = null;
+        let filteredTechniques = [...techniques];
+
+        // DOM Elements
+        const navLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const adminToggle = document.getElementById('admin-toggle');
+        const adminPanel = document.getElementById('admin-panel');
+        const closeAdmin = document.getElementById('close-admin');
+        const loginModal = document.getElementById('login-modal');
+        const closeLogin = document.getElementById('close-login');
+        const confirmLogin = document.getElementById('confirm-login');
+        const deleteModal = document.getElementById('delete-modal');
+        const closeDelete = document.getElementById('close-delete');
+        const cancelDelete = document.getElementById('cancel-delete');
+        const confirmDelete = document.getElementById('confirm-delete');
+        const techniqueForm = document.getElementById('technique-form');
+        const techniqueSearch = document.getElementById('technique-search');
+        const adminTabs = document.querySelectorAll('.admin-tab');
+        const adminTabContents = document.querySelectorAll('.admin-tab-content');
+        const techniquesContainer = document.getElementById('techniques-container');
+        const recentTechniquesContainer = document.getElementById('recent-techniques');
+        const adminTechniquesList = document.getElementById('admin-techniques-list');
+        const tacticFilter = document.getElementById('tactic-filter');
+        const platformFilter = document.getElementById('platform-filter');
+        const controlCategories = document.querySelectorAll('.control-category');
+        const controlsList = document.getElementById('controls-list');
+        const evidenceList = document.getElementById('evidence-list');
+        const evidenceMatrix = document.getElementById('evidence-matrix');
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTechniques();
+            renderDashboard();
+            renderTechniques();
+            renderEvidenceMatrix();
+            renderControls();
+            
+            // Check if admin is already logged in
+            const savedAdminState = sessionStorage.getItem('isAdmin');
+            if (savedAdminState === 'true') {
+                isAdmin = true;
+                updateAdminUI();
+            }
+        });
+
+        // Navigation functionality
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active nav link
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding tab content
+                const tabId = this.getAttribute('data-tab');
+                tabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                    }
+                });
+            });
+        });
+
+        // Admin panel functionality
+        adminToggle.addEventListener('click', function() {
+            if (isAdmin) {
+                adminPanel.classList.add('active');
+            } else {
+                loginModal.classList.add('active');
+            }
+        });
+
+        closeAdmin.addEventListener('click', function() {
+            adminPanel.classList.remove('active');
+        });
+
+        // Login functionality
+        closeLogin.addEventListener('click', function() {
+            loginModal.classList.remove('active');
+        });
+
+        confirmLogin.addEventListener('click', function() {
+            const password = document.getElementById('admin-password').value;
+            if (password === ADMIN_PASSWORD) {
+                isAdmin = true;
+                sessionStorage.setItem('isAdmin', 'true');
+                updateAdminUI();
+                loginModal.classList.remove('active');
+                adminPanel.classList.add('active');
+            } else {
+                alert('Incorrect password. Please try again.');
+            }
+        });
+
+        // Delete functionality
+        closeDelete.addEventListener('click', function() {
+            deleteModal.classList.remove('active');
+        });
+
+        cancelDelete.addEventListener('click', function() {
+            deleteModal.classList.remove('active');
+        });
+
+        confirmDelete.addEventListener('click', function() {
+            if (currentTechniqueToDelete) {
+                techniques = techniques.filter(t => t.id !== currentTechniqueToDelete);
+                saveTechniques();
+                renderTechniques();
+                renderDashboard();
+                renderEvidenceMatrix();
+                renderControls();
+                deleteModal.classList.remove('active');
+                currentTechniqueToDelete = null;
+            }
+        });
+
+        // Admin tabs functionality
+        adminTabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabId = this.getAttribute('data-admin-tab');
+                
+                // Update active admin tab
+                adminTabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding admin tab content
+                adminTabContents.forEach(content => {
+                    content.classList.remove('active');
+                    if (content.id === tabId) {
+                        content.classList.add('active');
+                    }
+                });
+                
+                // If manage techniques tab is active, render the list
+                if (tabId === 'manage-techniques') {
+                    renderAdminTechniquesList();
+                }
+            });
+        });
+
+        // Technique form submission
+        techniqueForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newTechnique = {
+                id: document.getElementById('technique-id').value,
+                name: document.getElementById('technique-name').value,
+                tactic: document.getElementById('technique-tactic').value,
+                platform: document.getElementById('technique-platform').value,
+                description: document.getElementById('technique-description').value,
+                forensicEvidence: document.getElementById('forensic-evidence').value,
+                loggingControl: document.getElementById('logging-control').value,
+                auditQuestion: document.getElementById('audit-question').value,
+                mitigation: document.getElementById('mitigation').value
+            };
+            
+            // Check if technique ID already exists
+            if (techniques.some(t => t.id === newTechnique.id)) {
+                alert('A technique with this ID already exists. Please use a different ID.');
+                return;
+            }
+            
+            techniques.push(newTechnique);
+            saveTechniques();
+            renderTechniques();
+            renderDashboard();
+            renderEvidenceMatrix();
+            renderControls();
+            
+            // Reset form and show success message
+            techniqueForm.reset();
+            alert('Technique added successfully!');
+        });
+
+        // Search functionality
+        techniqueSearch.addEventListener('input', function() {
+            filterTechniques();
+        });
+
+        tacticFilter.addEventListener('change', function() {
+            filterTechniques();
+        });
+
+        platformFilter.addEventListener('change', function() {
+            filterTechniques();
+        });
+
+        // Control category filtering
+        controlCategories.forEach(category => {
+            category.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active category
+                controlCategories.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Filter controls
+                const categoryType = this.getAttribute('data-category');
+                renderControls(categoryType);
+            });
+        });
+
+        // Load techniques from localStorage
+        function loadTechniques() {
+            const storedTechniques = localStorage.getItem('attack-techniques');
+            if (storedTechniques) {
+                techniques = JSON.parse(storedTechniques);
+            }
+        }
+
+        // Save techniques to localStorage
+        function saveTechniques() {
+            localStorage.setItem('attack-techniques', JSON.stringify(techniques));
+        }
+
+        // Update admin UI based on login state
+        function updateAdminUI() {
+            if (isAdmin) {
+                adminToggle.innerHTML = '<i class="fas fa-user-shield"></i> Admin Panel';
+            } else {
+                adminToggle.innerHTML = '<i class="fas fa-user-shield"></i> Admin Access';
+            }
+        }
+
+        // Render dashboard with statistics
+        function renderDashboard() {
+            // Update statistics
+            document.getElementById('techniques-count').textContent = techniques.length;
+            
+            // Count unique evidence types
+            const evidenceTypes = new Set();
+            techniques.forEach(technique => {
+                const evidenceList = technique.forensicEvidence.split(',').map(e => e.trim());
+                evidenceList.forEach(evidence => evidenceTypes.add(evidence));
+            });
+            document.getElementById('evidence-types-count').textContent = evidenceTypes.size;
+            
+            // Count controls (simplified - one per technique)
+            document.getElementById('controls-count').textContent = techniques.length;
+            
+            // Count audit questions (simplified - one per technique)
+            document.getElementById('questions-count').textContent = techniques.length;
+            
+            // Render recent techniques
+            recentTechniquesContainer.innerHTML = '';
+            const recentTechniques = techniques.slice(0, 5);
+            recentTechniques.forEach(technique => {
+                const techniqueItem = document.createElement('div');
+                techniqueItem.className = 'technique-item';
+                techniqueItem.innerHTML = `
+                    <h4>${technique.name} (${technique.id})</h4>
+                    <p>${formatTactic(technique.tactic)} • ${technique.platform}</p>
+                `;
+                recentTechniquesContainer.appendChild(techniqueItem);
+            });
+        }
+
+        // Filter techniques based on search and filters
+        function filterTechniques() {
+            const searchTerm = techniqueSearch.value.toLowerCase();
+            const selectedTactic = tacticFilter.value;
+            const selectedPlatform = platformFilter.value;
+            
+            filteredTechniques = techniques.filter(technique => {
+                const matchesSearch = 
+                    technique.name.toLowerCase().includes(searchTerm) ||
+                    technique.id.toLowerCase().includes(searchTerm) ||
+                    technique.description.toLowerCase().includes(searchTerm) ||
+                    technique.forensicEvidence.toLowerCase().includes(searchTerm);
+                
+                const matchesTactic = selectedTactic === 'all' || technique.tactic === selectedTactic;
+                const matchesPlatform = selectedPlatform === 'all' || technique.platform === selectedPlatform;
+                
+                return matchesSearch && matchesTactic && matchesPlatform;
+            });
+            
+            renderTechniques();
+        }
+
+        // Render techniques to the page
+        function renderTechniques() {
+            techniquesContainer.innerHTML = '';
+            
+            if (filteredTechniques.length === 0) {
+                techniquesContainer.innerHTML = '<div class="no-data">No techniques found matching your criteria.</div>';
+                return;
+            }
+            
+            filteredTechniques.forEach(technique => {
+                const techniqueCard = document.createElement('div');
+                techniqueCard.className = 'technique-card';
+                
+                techniqueCard.innerHTML = `
+                    <div class="technique-header">
+                        <h3>${technique.name}</h3>
+                        <div class="technique-id">${technique.id}</div>
+                    </div>
+                    <div class="technique-body">
+                        <div class="technique-section">
+                            <h4><i class="fas fa-info-circle"></i> Description</h4>
+                            <p>${technique.description}</p>
+                        </div>
+                        <div class="technique-section">
+                            <h4><i class="fas fa-search"></i> Forensic Evidence Required</h4>
+                            <p>${technique.forensicEvidence}</p>
+                        </div>
+                        <div class="technique-section">
+                            <h4><i class="fas fa-clipboard-list"></i> Logging/Technical Control</h4>
+                            <p>${technique.loggingControl}</p>
+                        </div>
+                        <div class="technique-section">
+                            <h4><i class="fas fa-question-circle"></i> Audit Question</h4>
+                            <p>${technique.auditQuestion}</p>
+                        </div>
+                        <div class="technique-meta">
+                            <span class="tactic-badge">${formatTactic(technique.tactic)}</span>
+                            <span class="platform-badge">${technique.platform}</span>
+                        </div>
+                    </div>
+                `;
+                
+                techniquesContainer.appendChild(techniqueCard);
+            });
+        }
+
+        // Render evidence matrix
+        function renderEvidenceMatrix() {
+            // Extract unique evidence types
+            const evidenceTypes = new Set();
+            techniques.forEach(technique => {
+                const evidenceList = technique.forensicEvidence.split(',').map(e => e.trim());
+                evidenceList.forEach(evidence => evidenceTypes.add(evidence));
+            });
+            
+            // Render evidence list
+            evidenceList.innerHTML = '';
+            evidenceTypes.forEach(evidence => {
+                const evidenceItem = document.createElement('li');
+                evidenceItem.className = 'evidence-item';
+                evidenceItem.textContent = evidence;
+                evidenceList.appendChild(evidenceItem);
+            });
+            
+            // Render matrix table
+            evidenceMatrix.innerHTML = '';
+            
+            // Create table header
+            const thead = evidenceMatrix.createTHead();
+            const headerRow = thead.insertRow();
+            const techniqueHeader = headerRow.insertCell();
+            techniqueHeader.textContent = 'Technique';
+            
+            evidenceTypes.forEach(evidence => {
+                const headerCell = headerRow.insertCell();
+                headerCell.textContent = evidence;
+                headerCell.className = 'evidence-cell';
+            });
+            
+            // Create table body
+            const tbody = evidenceMatrix.createTBody();
+            techniques.forEach(technique => {
+                const row = tbody.insertRow();
+                const techniqueCell = row.insertCell();
+                techniqueCell.textContent = `${technique.name} (${technique.id})`;
+                
+                evidenceTypes.forEach(evidence => {
+                    const cell = row.insertCell();
+                    const hasEvidence = technique.forensicEvidence.includes(evidence);
+                    cell.className = `evidence-cell ${hasEvidence ? 'evidence-present' : 'evidence-absent'}`;
+                    cell.textContent = hasEvidence ? '✓' : '—';
+                });
+            });
+        }
+
+        // Render controls and audit questions
+        function renderControls(category = 'all') {
+            controlsList.innerHTML = '';
+            
+            const controlsToRender = techniques.filter(technique => {
+                if (category === 'all') return true;
+                
+                // Simple mapping of technique tactics to control types
+                const tacticToControl = {
+                    'initial-access': 'preventive',
+                    'execution': 'preventive',
+                    'persistence': 'detective',
+                    'privilege-escalation': 'detective',
+                    'defense-evasion': 'detective',
+                    'credential-access': 'detective',
+                    'discovery': 'detective',
+                    'lateral-movement': 'detective',
+                    'collection': 'detective',
+                    'exfiltration': 'detective',
+                    'command-and-control': 'detective'
+                };
+                
+                return tacticToControl[technique.tactic] === category;
+            });
+            
+            controlsToRender.forEach(technique => {
+                const controlItem = document.createElement('div');
+                controlItem.className = 'control-item';
+                
+                // Determine control type based on tactic
+                let controlType = 'detective';
+                if (technique.tactic === 'initial-access' || technique.tactic === 'execution') {
+                    controlType = 'preventive';
+                }
+                
+                controlItem.innerHTML = `
+                    <h4>${technique.name} (${technique.id})</h4>
+                    <div class="control-meta">
+                        <span class="control-type ${controlType}">${controlType.charAt(0).toUpperCase() + controlType.slice(1)}</span>
+                        <span class="control-technique">${formatTactic(technique.tactic)} • ${technique.platform}</span>
+                    </div>
+                    <div class="control-description">
+                        <p><strong>Control:</strong> ${technique.loggingControl}</p>
+                    </div>
+                    <div class="audit-question">
+                        <h5><i class="fas fa-question-circle"></i> Audit Question</h5>
+                        <p>${technique.auditQuestion}</p>
+                    </div>
+                `;
+                
+                controlsList.appendChild(controlItem);
+            });
+        }
+
+        // Render admin techniques list
+        function renderAdminTechniquesList() {
+            adminTechniquesList.innerHTML = '';
+            
+            techniques.forEach(technique => {
+                const techniqueItem = document.createElement('div');
+                techniqueItem.className = 'admin-technique-item';
+                
+                techniqueItem.innerHTML = `
+                    <div class="admin-technique-info">
+                        <h4>${technique.name} (${technique.id})</h4>
+                        <p>${formatTactic(technique.tactic)} • ${technique.platform}</p>
+                    </div>
+                    <div class="admin-technique-actions">
+                        <button class="action-btn edit-btn">Edit</button>
+                        <button class="action-btn delete-btn" data-id="${technique.id}">Delete</button>
+                    </div>
+                `;
+                
+                adminTechniquesList.appendChild(techniqueItem);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.admin-technique-item .delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const techniqueId = this.getAttribute('data-id');
+                    currentTechniqueToDelete = techniqueId;
+                    deleteModal.classList.add('active');
+                });
+            });
+        }
+
+        // Helper function to format tactic names
+        function formatTactic(tactic) {
+            return tactic.split('-').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1)
+            ).join(' ');
+        }
+    </script>
+</body>
+</html>
