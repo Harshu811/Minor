@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATT&CK Forensic Platform - Key Attack Types</title>
+    <title>ATT&CK Forensic Platform - Automated Evidence Matrix</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -133,6 +133,17 @@
         .section-header p {
             color: var(--gray-color);
             font-size: 1.1rem;
+        }
+
+        .automation-badge {
+            display: inline-block;
+            background-color: var(--success-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            vertical-align: middle;
         }
 
         /* Dashboard Styles */
@@ -574,6 +585,28 @@
 
         .evidence-absent {
             color: var(--gray-color);
+        }
+
+        .matrix-info {
+            background-color: #e8f4fc;
+            border-left: 4px solid var(--secondary-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .matrix-info h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 0 10px;
+            color: var(--primary-color);
+        }
+
+        .matrix-info p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--dark-color);
         }
 
         /* Controls Tab Styles */
@@ -1041,7 +1074,7 @@
                 <ul>
                     <li><a href="#" class="nav-link active" data-tab="dashboard">Dashboard</a></li>
                     <li><a href="#" class="nav-link" data-tab="techniques">Attack Techniques</a></li>
-                    <li><a href="#" class="nav-link" data-tab="evidence">Evidence Matrix</a></li>
+                    <li><a href="#" class="nav-link" data-tab="evidence">Evidence Matrix <span class="automation-badge">Auto-Update</span></a></li>
                     <li><a href="#" class="nav-link" data-tab="controls">Controls & Audits</a></li>
                 </ul>
             </nav>
@@ -1215,13 +1248,19 @@
             <!-- Evidence Matrix Tab -->
             <section id="evidence" class="tab-content">
                 <div class="section-header">
-                    <h2>Evidence Matrix</h2>
-                    <p>Mapping attack techniques to required forensic evidence</p>
+                    <h2>Evidence Matrix <span class="automation-badge">Auto-Update</span></h2>
+                    <p>Mapping attack techniques to required forensic evidence - Updates automatically when techniques change</p>
+                </div>
+                
+                <div class="matrix-info">
+                    <h4><i class="fas fa-sync-alt"></i> Automatic Updates</h4>
+                    <p>The evidence matrix automatically updates when you add, edit, or delete techniques. No manual updates required!</p>
                 </div>
                 
                 <div class="matrix-container">
                     <div class="matrix-sidebar">
                         <h3>Evidence Types</h3>
+                        <p style="font-size: 0.9rem; color: var(--gray-color); margin-bottom: 15px;">Extracted automatically from all techniques</p>
                         <ul id="evidence-list">
                             <!-- Evidence types will be loaded here -->
                         </ul>
@@ -1340,7 +1379,7 @@
                             <div class="form-group">
                                 <label for="forensic-evidence">Forensic Evidence Required *</label>
                                 <textarea id="forensic-evidence" rows="4" required></textarea>
-                                <small>List the specific forensic evidence needed to detect this technique</small>
+                                <small>List the specific forensic evidence needed to detect this technique (comma-separated)</small>
                             </div>
                             
                             <div class="form-group">
@@ -1691,6 +1730,9 @@
                 renderControls();
                 deleteModal.classList.remove('active');
                 currentTechniqueToDelete = null;
+                
+                // Show success message
+                showNotification('Technique deleted successfully!', 'success');
             }
         });
 
@@ -1749,7 +1791,7 @@
             
             // Reset form and show success message
             techniqueForm.reset();
-            alert('Technique added successfully!');
+            showNotification('Technique added successfully! The evidence matrix has been updated automatically.', 'success');
         });
 
         // Search functionality
@@ -1799,6 +1841,70 @@
                 adminToggle.innerHTML = '<i class="fas fa-user-shield"></i> Admin Panel';
             } else {
                 adminToggle.innerHTML = '<i class="fas fa-user-shield"></i> Admin Access';
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 4px;
+                color: white;
+                font-weight: 500;
+                z-index: 1200;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                max-width: 400px;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            if (type === 'success') {
+                notification.style.backgroundColor = 'var(--success-color)';
+            } else if (type === 'error') {
+                notification.style.backgroundColor = 'var(--accent-color)';
+            } else {
+                notification.style.backgroundColor = 'var(--secondary-color)';
+            }
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove notification after 5 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 5000);
+            
+            // Add CSS for animations
+            if (!document.querySelector('#notification-styles')) {
+                const style = document.createElement('style');
+                style.id = 'notification-styles';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOut {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
             }
         }
 
@@ -1903,9 +2009,9 @@
             });
         }
 
-        // Render evidence matrix
+        // Render evidence matrix - AUTOMATICALLY UPDATES
         function renderEvidenceMatrix() {
-            // Extract unique evidence types
+            // Extract unique evidence types from ALL techniques
             const evidenceTypes = new Set();
             techniques.forEach(technique => {
                 const evidenceList = technique.forensicEvidence.split(',').map(e => e.trim());
