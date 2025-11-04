@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATT&CK Forensic Platform - Automated Evidence Matrix</title>
+    <title>ATT&CK Forensic Platform - Export Function</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -364,6 +364,119 @@
             margin: 5px 0 0;
             font-size: 0.9rem;
             color: var(--gray-color);
+        }
+
+        /* Export Section Styles */
+        .export-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .export-section h3 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--primary-color);
+        }
+
+        .export-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .export-option {
+            background-color: var(--light-color);
+            border-radius: 6px;
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .export-option:hover {
+            background-color: #dfe6e9;
+        }
+
+        .export-option h4 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .export-option p {
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .export-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .form-group select, .form-group input {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+
+        .btn i {
+            margin-right: 8px;
         }
 
         /* Techniques Tab Styles */
@@ -828,53 +941,6 @@
             margin-top: 30px;
         }
 
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            border-radius: 4px;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-        }
-
-        .btn-primary {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #2980b9;
-        }
-
-        .btn-secondary {
-            background-color: var(--gray-color);
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #7f8c8d;
-        }
-
-        .btn-danger {
-            background-color: var(--accent-color);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #c0392b;
-        }
-
-        .btn-success {
-            background-color: var(--success-color);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #27ae60;
-        }
-
         .admin-search {
             margin-bottom: 20px;
         }
@@ -1031,6 +1097,10 @@
             .footer-content {
                 grid-template-columns: 1fr 1fr;
             }
+            
+            .export-options {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1076,6 +1146,7 @@
                     <li><a href="#" class="nav-link" data-tab="techniques">Attack Techniques</a></li>
                     <li><a href="#" class="nav-link" data-tab="evidence">Evidence Matrix <span class="automation-badge">Auto-Update</span></a></li>
                     <li><a href="#" class="nav-link" data-tab="controls">Controls & Audits</a></li>
+                    <li><a href="#" class="nav-link" data-tab="export">Export</a></li>
                 </ul>
             </nav>
             <div class="admin-section">
@@ -1311,6 +1382,120 @@
                 </div>
             </section>
 
+            <!-- Export Tab -->
+            <section id="export" class="tab-content">
+                <div class="section-header">
+                    <h2>Export Data & Checklists</h2>
+                    <p>Generate CSV/Excel files and checklists for specific attack types</p>
+                </div>
+                
+                <div class="export-section">
+                    <h3>Export Options</h3>
+                    <div class="export-options">
+                        <div class="export-option">
+                            <h4><i class="fas fa-file-csv"></i> CSV Export</h4>
+                            <p>Export techniques, evidence, and audit questions in CSV format for analysis in spreadsheet applications.</p>
+                            <div class="export-form">
+                                <div class="form-group">
+                                    <label for="csv-attack-type">Select Attack Type:</label>
+                                    <select id="csv-attack-type">
+                                        <option value="all">All Attack Types</option>
+                                        <option value="ransomware">Ransomware</option>
+                                        <option value="databreach">Data Breach</option>
+                                        <option value="cloud">Cloud Vulnerability</option>
+                                        <option value="auth">Authentication Attacks</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="csv-filename">File Name:</label>
+                                    <input type="text" id="csv-filename" value="attack_techniques_export" placeholder="Enter file name">
+                                </div>
+                                <button id="export-csv" class="btn btn-primary">
+                                    <i class="fas fa-download"></i> Export CSV
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="export-option">
+                            <h4><i class="fas fa-file-excel"></i> Excel Export</h4>
+                            <p>Export a comprehensive Excel file with techniques, evidence, controls, and audit questions.</p>
+                            <div class="export-form">
+                                <div class="form-group">
+                                    <label for="excel-attack-type">Select Attack Type:</label>
+                                    <select id="excel-attack-type">
+                                        <option value="all">All Attack Types</option>
+                                        <option value="ransomware">Ransomware</option>
+                                        <option value="databreach">Data Breach</option>
+                                        <option value="cloud">Cloud Vulnerability</option>
+                                        <option value="auth">Authentication Attacks</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="excel-filename">File Name:</label>
+                                    <input type="text" id="excel-filename" value="attack_techniques_export" placeholder="Enter file name">
+                                </div>
+                                <button id="export-excel" class="btn btn-success">
+                                    <i class="fas fa-download"></i> Export Excel
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="export-option">
+                            <h4><i class="fas fa-clipboard-list"></i> Incident Response Checklist</h4>
+                            <p>Generate a comprehensive checklist for incident response based on specific attack types.</p>
+                            <div class="export-form">
+                                <div class="form-group">
+                                    <label for="checklist-attack-type">Select Attack Type:</label>
+                                    <select id="checklist-attack-type">
+                                        <option value="ransomware">Ransomware</option>
+                                        <option value="databreach">Data Breach</option>
+                                        <option value="cloud">Cloud Vulnerability</option>
+                                        <option value="auth">Authentication Attacks</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="checklist-filename">File Name:</label>
+                                    <input type="text" id="checklist-filename" value="incident_response_checklist" placeholder="Enter file name">
+                                </div>
+                                <button id="export-checklist" class="btn btn-warning">
+                                    <i class="fas fa-download"></i> Generate Checklist
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="export-option">
+                            <h4><i class="fas fa-search"></i> Forensic Evidence Checklist</h4>
+                            <p>Create a detailed forensic evidence collection checklist for specific attack scenarios.</p>
+                            <div class="export-form">
+                                <div class="form-group">
+                                    <label for="forensic-attack-type">Select Attack Type:</label>
+                                    <select id="forensic-attack-type">
+                                        <option value="ransomware">Ransomware</option>
+                                        <option value="databreach">Data Breach</option>
+                                        <option value="cloud">Cloud Vulnerability</option>
+                                        <option value="auth">Authentication Attacks</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="forensic-filename">File Name:</label>
+                                    <input type="text" id="forensic-filename" value="forensic_evidence_checklist" placeholder="Enter file name">
+                                </div>
+                                <button id="export-forensic" class="btn btn-primary">
+                                    <i class="fas fa-download"></i> Generate Forensic Checklist
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="content-card">
+                    <h3>Recent Exports</h3>
+                    <div id="export-history">
+                        <p>No exports yet. Your export history will appear here.</p>
+                    </div>
+                </div>
+            </section>
+
             <!-- Admin Panel (Hidden by default) -->
             <section id="admin-panel" class="admin-panel">
                 <div class="admin-header">
@@ -1469,6 +1654,37 @@
         </div>
     </div>
 
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ATT&CK Forensic Platform</h3>
+                    <p>Helping organizations understand forensic evidence requirements for focused attack types</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">MITRE ATT&CK Framework</a></li>
+                        <li><a href="#">Forensic Best Practices</a></li>
+                        <li><a href="#">Incident Response Guide</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>security@organization.com</p>
+                    <p>+1 (555) 123-4567</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 ATT&CK Forensic Platform. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- SheetJS library for Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
     <script>
         // Sample data focused on the four attack types
         let techniques = [
@@ -1569,6 +1785,7 @@
         let isAdmin = false;
         let currentTechniqueToDelete = null;
         let filteredTechniques = [...techniques];
+        let exportHistory = [];
 
         // DOM Elements
         const navLinks = document.querySelectorAll('.nav-link');
@@ -1597,6 +1814,13 @@
         const evidenceList = document.getElementById('evidence-list');
         const evidenceMatrix = document.getElementById('evidence-matrix');
         const attackCards = document.querySelectorAll('.attack-card');
+        const exportHistoryContainer = document.getElementById('export-history');
+
+        // Export elements
+        const exportCsvBtn = document.getElementById('export-csv');
+        const exportExcelBtn = document.getElementById('export-excel');
+        const exportChecklistBtn = document.getElementById('export-checklist');
+        const exportForensicBtn = document.getElementById('export-forensic');
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
@@ -1605,6 +1829,7 @@
             renderTechniques();
             renderEvidenceMatrix();
             renderControls();
+            loadExportHistory();
             
             // Check if admin is already logged in
             const savedAdminState = sessionStorage.getItem('isAdmin');
@@ -1794,6 +2019,31 @@
             });
         });
 
+        // Export functionality
+        exportCsvBtn.addEventListener('click', function() {
+            const attackType = document.getElementById('csv-attack-type').value;
+            const filename = document.getElementById('csv-filename').value || 'attack_techniques_export';
+            exportToCSV(attackType, filename);
+        });
+
+        exportExcelBtn.addEventListener('click', function() {
+            const attackType = document.getElementById('excel-attack-type').value;
+            const filename = document.getElementById('excel-filename').value || 'attack_techniques_export';
+            exportToExcel(attackType, filename);
+        });
+
+        exportChecklistBtn.addEventListener('click', function() {
+            const attackType = document.getElementById('checklist-attack-type').value;
+            const filename = document.getElementById('checklist-filename').value || 'incident_response_checklist';
+            exportChecklist(attackType, filename);
+        });
+
+        exportForensicBtn.addEventListener('click', function() {
+            const attackType = document.getElementById('forensic-attack-type').value;
+            const filename = document.getElementById('forensic-filename').value || 'forensic_evidence_checklist';
+            exportForensicChecklist(attackType, filename);
+        });
+
         // Load techniques from localStorage
         function loadTechniques() {
             const storedTechniques = localStorage.getItem('attack-techniques');
@@ -1805,6 +2055,20 @@
         // Save techniques to localStorage
         function saveTechniques() {
             localStorage.setItem('attack-techniques', JSON.stringify(techniques));
+        }
+
+        // Load export history from localStorage
+        function loadExportHistory() {
+            const storedHistory = localStorage.getItem('export-history');
+            if (storedHistory) {
+                exportHistory = JSON.parse(storedHistory);
+                renderExportHistory();
+            }
+        }
+
+        // Save export history to localStorage
+        function saveExportHistory() {
+            localStorage.setItem('export-history', JSON.stringify(exportHistory));
         }
 
         // Update admin UI based on login state
@@ -2116,6 +2380,313 @@
                     deleteModal.classList.add('active');
                 });
             });
+        }
+
+        // Render export history
+        function renderExportHistory() {
+            if (exportHistory.length === 0) {
+                exportHistoryContainer.innerHTML = '<p>No exports yet. Your export history will appear here.</p>';
+                return;
+            }
+            
+            exportHistoryContainer.innerHTML = '';
+            const recentExports = exportHistory.slice(0, 5);
+            
+            recentExports.forEach(exportItem => {
+                const exportElement = document.createElement('div');
+                exportElement.className = 'technique-item';
+                exportElement.innerHTML = `
+                    <h4>${exportItem.filename}.${exportItem.format}</h4>
+                    <p>${formatAttackType(exportItem.attackType)} • ${new Date(exportItem.timestamp).toLocaleString()}</p>
+                `;
+                exportHistoryContainer.appendChild(exportElement);
+            });
+        }
+
+        // Add to export history
+        function addToExportHistory(attackType, filename, format) {
+            const exportItem = {
+                attackType: attackType,
+                filename: filename,
+                format: format,
+                timestamp: new Date().toISOString()
+            };
+            
+            exportHistory.unshift(exportItem);
+            if (exportHistory.length > 10) {
+                exportHistory = exportHistory.slice(0, 10);
+            }
+            
+            saveExportHistory();
+            renderExportHistory();
+        }
+
+        // Export to CSV function
+        function exportToCSV(attackType, filename) {
+            let dataToExport = techniques;
+            if (attackType !== 'all') {
+                dataToExport = techniques.filter(t => t.attackType === attackType);
+            }
+            
+            if (dataToExport.length === 0) {
+                showNotification('No data to export for the selected attack type.', 'error');
+                return;
+            }
+            
+            // Create CSV content
+            let csvContent = "Technique ID,Technique Name,Attack Type,Tactic,Description,Forensic Evidence,Logging Control,Audit Question,Mitigation\n";
+            
+            dataToExport.forEach(technique => {
+                const row = [
+                    technique.id,
+                    `"${technique.name}"`,
+                    formatAttackType(technique.attackType),
+                    formatTactic(technique.tactic),
+                    `"${technique.description}"`,
+                    `"${technique.forensicEvidence}"`,
+                    `"${technique.loggingControl}"`,
+                    `"${technique.auditQuestion}"`,
+                    `"${technique.mitigation || 'N/A'}"`
+                ].join(',');
+                
+                csvContent += row + '\n';
+            });
+            
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `${filename}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Add to history
+            addToExportHistory(attackType, filename, 'csv');
+            showNotification(`CSV file exported successfully!`, 'success');
+        }
+
+        // Export to Excel function
+        function exportToExcel(attackType, filename) {
+            let dataToExport = techniques;
+            if (attackType !== 'all') {
+                dataToExport = techniques.filter(t => t.attackType === attackType);
+            }
+            
+            if (dataToExport.length === 0) {
+                showNotification('No data to export for the selected attack type.', 'error');
+                return;
+            }
+            
+            // Prepare data for Excel
+            const excelData = dataToExport.map(technique => ({
+                'Technique ID': technique.id,
+                'Technique Name': technique.name,
+                'Attack Type': formatAttackType(technique.attackType),
+                'Tactic': formatTactic(technique.tactic),
+                'Description': technique.description,
+                'Forensic Evidence': technique.forensicEvidence,
+                'Logging Control': technique.loggingControl,
+                'Audit Question': technique.auditQuestion,
+                'Mitigation': technique.mitigation || 'N/A'
+            }));
+            
+            // Create worksheet
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            
+            // Create workbook and add the worksheet
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Attack Techniques");
+            
+            // Generate Excel file and trigger download
+            XLSX.writeFile(workbook, `${filename}.xlsx`);
+            
+            // Add to history
+            addToExportHistory(attackType, filename, 'xlsx');
+            showNotification(`Excel file exported successfully!`, 'success');
+        }
+
+        // Export incident response checklist
+        function exportChecklist(attackType, filename) {
+            const dataToExport = techniques.filter(t => t.attackType === attackType);
+            
+            if (dataToExport.length === 0) {
+                showNotification('No data to export for the selected attack type.', 'error');
+                return;
+            }
+            
+            // Create checklist content
+            let checklistContent = `INCIDENT RESPONSE CHECKLIST - ${formatAttackType(attackType).toUpperCase()}\n\n`;
+            checklistContent += "Generated: " + new Date().toLocaleString() + "\n";
+            checklistContent += "==========================================\n\n";
+            
+            checklistContent += "IMMEDIATE ACTIONS\n";
+            checklistContent += "-----------------\n";
+            checklistContent += "☐ Isolate affected systems from the network\n";
+            checklistContent += "☐ Preserve evidence (memory, disk, logs)\n";
+            checklistContent += "☐ Activate incident response team\n";
+            checklistContent += "☐ Notify appropriate stakeholders\n";
+            checklistContent += "☐ Document timeline of events\n\n";
+            
+            checklistContent += "FORENSIC EVIDENCE COLLECTION\n";
+            checklistContent += "---------------------------\n";
+            
+            // Extract unique evidence types
+            const evidenceTypes = new Set();
+            dataToExport.forEach(technique => {
+                const evidenceList = technique.forensicEvidence.split(',').map(e => e.trim());
+                evidenceList.forEach(evidence => evidenceTypes.add(evidence));
+            });
+            
+            evidenceTypes.forEach(evidence => {
+                checklistContent += `☐ ${evidence}\n`;
+            });
+            
+            checklistContent += "\nTECHNIQUES AND MITIGATIONS\n";
+            checklistContent += "-------------------------\n";
+            
+            dataToExport.forEach(technique => {
+                checklistContent += `\n${technique.id}: ${technique.name}\n`;
+                checklistContent += `Tactic: ${formatTactic(technique.tactic)}\n`;
+                checklistContent += `Audit Question: ${technique.auditQuestion}\n`;
+                checklistContent += `Mitigation: ${technique.mitigation || 'N/A'}\n`;
+                checklistContent += `Evidence: ${technique.forensicEvidence}\n`;
+            });
+            
+            checklistContent += "\nPOST-INCIDENT ACTIVITIES\n";
+            checklistContent += "-----------------------\n";
+            checklistContent += "☐ Conduct lessons learned session\n";
+            checklistContent += "☐ Update security controls and policies\n";
+            checklistContent += "☐ Enhance monitoring and detection capabilities\n";
+            checklistContent += "☐ Update incident response plan\n";
+            checklistContent += "☐ Provide additional training if needed\n";
+            
+            // Create and download file
+            const blob = new Blob([checklistContent], { type: 'text/plain;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `${filename}.txt`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Add to history
+            addToExportHistory(attackType, filename, 'txt');
+            showNotification(`Incident response checklist generated successfully!`, 'success');
+        }
+
+        // Export forensic evidence checklist
+        function exportForensicChecklist(attackType, filename) {
+            const dataToExport = techniques.filter(t => t.attackType === attackType);
+            
+            if (dataToExport.length === 0) {
+                showNotification('No data to export for the selected attack type.', 'error');
+                return;
+            }
+            
+            // Create forensic checklist content
+            let checklistContent = `FORENSIC EVIDENCE COLLECTION CHECKLIST - ${formatAttackType(attackType).toUpperCase()}\n\n`;
+            checklistContent += "Generated: " + new Date().toLocaleString() + "\n";
+            checklistContent += "==========================================\n\n";
+            
+            // Group evidence by category
+            const evidenceCategories = {
+                "Memory Evidence": [],
+                "Disk Evidence": [],
+                "Network Evidence": [],
+                "Log Evidence": [],
+                "Other Evidence": []
+            };
+            
+            // Extract and categorize evidence
+            dataToExport.forEach(technique => {
+                const evidenceList = technique.forensicEvidence.split(',').map(e => e.trim());
+                
+                evidenceList.forEach(evidence => {
+                    let categorized = false;
+                    
+                    // Categorize evidence
+                    if (evidence.toLowerCase().includes('memory') || 
+                        evidence.toLowerCase().includes('process') || 
+                        evidence.toLowerCase().includes('ram')) {
+                        evidenceCategories["Memory Evidence"].push(evidence);
+                        categorized = true;
+                    }
+                    
+                    if (evidence.toLowerCase().includes('file') || 
+                        evidence.toLowerCase().includes('disk') || 
+                        evidence.toLowerCase().includes('registry') ||
+                        evidence.toLowerCase().includes('prefetch')) {
+                        evidenceCategories["Disk Evidence"].push(evidence);
+                        categorized = true;
+                    }
+                    
+                    if (evidence.toLowerCase().includes('network') || 
+                        evidence.toLowerCase().includes('connection') || 
+                        evidence.toLowerCase().includes('packet') ||
+                        evidence.toLowerCase().includes('traffic')) {
+                        evidenceCategories["Network Evidence"].push(evidence);
+                        categorized = true;
+                    }
+                    
+                    if (evidence.toLowerCase().includes('log') || 
+                        evidence.toLowerCase().includes('event') || 
+                        evidence.toLowerCase().includes('audit')) {
+                        evidenceCategories["Log Evidence"].push(evidence);
+                        categorized = true;
+                    }
+                    
+                    if (!categorized) {
+                        evidenceCategories["Other Evidence"].push(evidence);
+                    }
+                });
+            });
+            
+            // Remove duplicates from each category
+            Object.keys(evidenceCategories).forEach(category => {
+                evidenceCategories[category] = [...new Set(evidenceCategories[category])];
+            });
+            
+            // Build checklist content
+            Object.keys(evidenceCategories).forEach(category => {
+                if (evidenceCategories[category].length > 0) {
+                    checklistContent += `${category}\n`;
+                    checklistContent += `${'='.repeat(category.length)}\n`;
+                    
+                    evidenceCategories[category].forEach(evidence => {
+                        checklistContent += `☐ ${evidence}\n`;
+                    });
+                    
+                    checklistContent += "\n";
+                }
+            });
+            
+            checklistContent += "TECHNIQUE-SPECIFIC EVIDENCE\n";
+            checklistContent += "==========================\n\n";
+            
+            dataToExport.forEach(technique => {
+                checklistContent += `${technique.id}: ${technique.name}\n`;
+                checklistContent += `Evidence: ${technique.forensicEvidence}\n\n`;
+            });
+            
+            // Create and download file
+            const blob = new Blob([checklistContent], { type: 'text/plain;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `${filename}.txt`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Add to history
+            addToExportHistory(attackType, filename, 'txt');
+            showNotification(`Forensic evidence checklist generated successfully!`, 'success');
         }
 
         // Helper function to format tactic names
