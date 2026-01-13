@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATT&CK Forensic Platform - Complete</title>
+    <title>ATT&CK Forensic Platform - Export Function</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -83,8 +83,6 @@
         .nav ul {
             display: flex;
             gap: 20px;
-            list-style-type: none; /* Remove bullets from header */
-            padding-left: 0; /* Remove padding from header */
         }
 
         .nav-link {
@@ -995,34 +993,6 @@
             color: white;
         }
 
-        /* Edit Mode Styles */
-        .edit-mode {
-            border-left: 4px solid var(--warning-color);
-        }
-
-        .form-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .form-header h3 {
-            margin: 0;
-            color: var(--primary-color);
-        }
-
-        .edit-indicator {
-            background-color: var(--warning-color);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
         /* Modal Styles */
         .modal {
             display: none;
@@ -1536,22 +1506,15 @@
                 </div>
                 
                 <div class="admin-tabs">
-                    <div class="admin-tab active" data-admin-tab="add-technique">Add/Edit Technique</div>
+                    <div class="admin-tab active" data-admin-tab="add-technique">Add Technique</div>
                     <div class="admin-tab" data-admin-tab="manage-techniques">Manage Techniques</div>
                 </div>
                 
                 <div class="admin-content">
-                    <!-- Add/Edit Technique Form -->
+                    <!-- Add Technique Form -->
                     <div id="add-technique" class="admin-tab-content active">
-                        <div class="form-header">
-                            <h3 id="form-title">Add New Attack Technique</h3>
-                            <div id="edit-indicator" class="edit-indicator" style="display: none;">
-                                <i class="fas fa-edit"></i> Editing Technique
-                            </div>
-                        </div>
+                        <h3>Add New Attack Technique</h3>
                         <form id="technique-form" class="admin-form">
-                            <input type="hidden" id="current-technique-id" value="">
-                            
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="technique-id">Technique ID *</label>
@@ -1623,11 +1586,8 @@
                             </div>
                             
                             <div class="form-actions">
-                                <button type="submit" id="submit-btn" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-plus"></i> Add Technique
-                                </button>
-                                <button type="button" id="cancel-edit" class="btn btn-secondary" style="display: none;">
-                                    Cancel Edit
                                 </button>
                                 <button type="reset" class="btn btn-secondary">Reset Form</button>
                             </div>
@@ -1693,34 +1653,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>ATT&CK Forensic Platform</h3>
-                    <p>Helping organizations understand forensic evidence requirements for focused attack types</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="#">MITRE ATT&CK Framework</a></li>
-                        <li><a href="#">Forensic Best Practices</a></li>
-                        <li><a href="#">Incident Response Guide</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Contact</h4>
-                    <p>security@organization.com</p>
-                    <p>+1 (555) 123-4567</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2023 ATT&CK Forensic Platform. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
     <!-- SheetJS library for Excel export -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -1826,8 +1758,6 @@
         let currentTechniqueToDelete = null;
         let filteredTechniques = [...techniques];
         let exportHistory = [];
-        let isEditing = false;
-        let currentEditingId = null;
 
         // DOM Elements
         const navLinks = document.querySelectorAll('.nav-link');
@@ -1857,13 +1787,6 @@
         const evidenceMatrix = document.getElementById('evidence-matrix');
         const attackCards = document.querySelectorAll('.attack-card');
         const exportHistoryContainer = document.getElementById('export-history');
-
-        // Form elements for editing
-        const formTitle = document.getElementById('form-title');
-        const editIndicator = document.getElementById('edit-indicator');
-        const currentTechniqueId = document.getElementById('current-technique-id');
-        const submitBtn = document.getElementById('submit-btn');
-        const cancelEditBtn = document.getElementById('cancel-edit');
 
         // Export elements
         const exportCsvBtn = document.getElementById('export-csv');
@@ -1937,8 +1860,6 @@
 
         closeAdmin.addEventListener('click', function() {
             adminPanel.classList.remove('active');
-            // Reset form when closing admin panel
-            resetForm();
         });
 
         // Login functionality
@@ -2012,7 +1933,7 @@
         techniqueForm.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const techniqueData = {
+            const newTechnique = {
                 id: document.getElementById('technique-id').value,
                 name: document.getElementById('technique-name').value,
                 attackType: document.getElementById('attack-type').value,
@@ -2024,101 +1945,23 @@
                 mitigation: document.getElementById('mitigation').value
             };
             
-            if (isEditing) {
-                // Update existing technique
-                const index = techniques.findIndex(t => t.id === currentEditingId);
-                if (index !== -1) {
-                    techniques[index] = techniqueData;
-                    saveTechniques();
-                    renderTechniques();
-                    renderDashboard();
-                    renderEvidenceMatrix();
-                    renderControls();
-                    
-                    // Show success message
-                    showNotification('Technique updated successfully! The evidence matrix has been updated automatically.', 'success');
-                    
-                    // Reset form and exit edit mode
-                    resetForm();
-                }
-            } else {
-                // Add new technique
-                // Check if technique ID already exists
-                if (techniques.some(t => t.id === techniqueData.id)) {
-                    alert('A technique with this ID already exists. Please use a different ID.');
-                    return;
-                }
-                
-                techniques.push(techniqueData);
-                saveTechniques();
-                renderTechniques();
-                renderDashboard();
-                renderEvidenceMatrix();
-                renderControls();
-                
-                // Show success message
-                showNotification('Technique added successfully! The evidence matrix has been updated automatically.', 'success');
-                
-                // Reset form
-                techniqueForm.reset();
+            // Check if technique ID already exists
+            if (techniques.some(t => t.id === newTechnique.id)) {
+                alert('A technique with this ID already exists. Please use a different ID.');
+                return;
             }
-        });
-
-        // Cancel edit button
-        cancelEditBtn.addEventListener('click', function() {
-            resetForm();
-        });
-
-        // Reset form function
-        function resetForm() {
+            
+            techniques.push(newTechnique);
+            saveTechniques();
+            renderTechniques();
+            renderDashboard();
+            renderEvidenceMatrix();
+            renderControls();
+            
+            // Reset form and show success message
             techniqueForm.reset();
-            isEditing = false;
-            currentEditingId = null;
-            currentTechniqueId.value = '';
-            
-            // Update UI to reflect add mode
-            formTitle.textContent = 'Add New Attack Technique';
-            editIndicator.style.display = 'none';
-            submitBtn.innerHTML = '<i class="fas fa-plus"></i> Add Technique';
-            cancelEditBtn.style.display = 'none';
-            techniqueForm.classList.remove('edit-mode');
-        }
-
-        // Edit technique function
-        function editTechnique(techniqueId) {
-            const technique = techniques.find(t => t.id === techniqueId);
-            if (!technique) return;
-            
-            // Populate form with technique data
-            document.getElementById('technique-id').value = technique.id;
-            document.getElementById('technique-name').value = technique.name;
-            document.getElementById('attack-type').value = technique.attackType;
-            document.getElementById('technique-tactic').value = technique.tactic;
-            document.getElementById('technique-description').value = technique.description || '';
-            document.getElementById('forensic-evidence').value = technique.forensicEvidence;
-            document.getElementById('logging-control').value = technique.loggingControl;
-            document.getElementById('audit-question').value = technique.auditQuestion;
-            document.getElementById('mitigation').value = technique.mitigation || '';
-            
-            // Set editing state
-            isEditing = true;
-            currentEditingId = techniqueId;
-            currentTechniqueId.value = techniqueId;
-            
-            // Update UI to reflect edit mode
-            formTitle.textContent = 'Edit Attack Technique';
-            editIndicator.style.display = 'inline-block';
-            submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Technique';
-            cancelEditBtn.style.display = 'inline-block';
-            techniqueForm.classList.add('edit-mode');
-            
-            // Switch to the add/edit tab
-            adminTabs.forEach(t => t.classList.remove('active'));
-            document.querySelector('.admin-tab[data-admin-tab="add-technique"]').classList.add('active');
-            
-            adminTabContents.forEach(content => content.classList.remove('active'));
-            document.getElementById('add-technique').classList.add('active');
-        }
+            showNotification('Technique added successfully! The evidence matrix has been updated automatically.', 'success');
+        });
 
         // Search functionality
         techniqueSearch.addEventListener('input', function() {
@@ -2493,20 +2336,12 @@
                         <p>${formatAttackType(technique.attackType)} • ${formatTactic(technique.tactic)}</p>
                     </div>
                     <div class="admin-technique-actions">
-                        <button class="action-btn edit-btn" data-id="${technique.id}">Edit</button>
+                        <button class="action-btn edit-btn">Edit</button>
                         <button class="action-btn delete-btn" data-id="${technique.id}">Delete</button>
                     </div>
                 `;
                 
                 adminTechniquesList.appendChild(techniqueItem);
-            });
-            
-            // Add event listeners to edit buttons
-            document.querySelectorAll('.admin-technique-item .edit-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const techniqueId = this.getAttribute('data-id');
-                    editTechnique(techniqueId);
-                });
             });
             
             // Add event listeners to delete buttons
