@@ -2462,70 +2462,26 @@
         }
 
         // Export to CSV
-        function renderExportHistory() {
-            if (exportHistory.length === 0) {
-                exportHistoryContainer.innerHTML = '<p>No exports yet. Your export history will appear here.</p>';
-                return;
-            }
-            
-            exportHistoryContainer.innerHTML = '';
-            const recentExports = exportHistory.slice(0, 5);
-            
-            recentExports.forEach(exportItem => {
-                const exportElement = document.createElement('div');
-                exportElement.className = 'technique-item';
-                exportElement.innerHTML = `
-                    <h4>${exportItem.filename}.${exportItem.format}</h4>
-                    <p>${formatAttackType(exportItem.attackType)} • ${new Date(exportItem.timestamp).toLocaleString()}</p>
-                `;
-                exportHistoryContainer.appendChild(exportElement);
-            });
-        }
-
-        // Add to export history
-        function addToExportHistory(attackType, filename, format) {
-            const exportItem = {
-                attackType: attackType,
-                filename: filename,
-                format: format,
-                timestamp: new Date().toISOString()
-            };
-            
-            exportHistory.unshift(exportItem);
-            if (exportHistory.length > 10) {
-                exportHistory = exportHistory.slice(0, 10);
-            }
-            
-            saveExportHistory();
-            renderExportHistory();
-        }
-
-        // Export to CSV function
-        function exportToCSV(attackType, filename) {
-            let dataToExport = techniques;
-            if (attackType !== 'all') {
-                dataToExport = techniques.filter(t => t.attackType === attackType);
-            }
-            
-            if (dataToExport.length === 0) {
-                showNotification('No data to export for the selected attack type.', 'error');
+        function exportToCSV() {
+            if (techniques.length === 0) {
+                showNotification('No data to export.', 'error');
                 return;
             }
             
             // Create CSV content
-            let csvContent = "Technique ID,Technique Name,Attack Type,Tactic,Description,Forensic Evidence,Logging Control,Audit Question,Mitigation\n";
+            let csvContent = "Technique ID,Technique Name,Attack Type,Tactic,Description,Forensic Evidence,Mitigation Actions,Security Controls,Audit Questions\n";
             
-            dataToExport.forEach(technique => {
+            techniques.forEach(technique => {
                 const row = [
                     technique.id,
                     `"${technique.name}"`,
                     formatAttackType(technique.attackType),
                     formatTactic(technique.tactic),
                     `"${technique.description}"`,
-                    `"${technique.forensicEvidence}"`,
-                    `"${technique.loggingControl}"`,
-                    `"${technique.auditQuestion}"`,
-                    `"${technique.mitigation || 'N/A'}"`
+                    `"${technique.evidence.join('; ')}"`,
+                    `"${technique.mitigation.join('; ')}"`,
+                    `"${technique.control.join('; ')}"`,
+                    `"${technique.audit.join('; ')}"`
                 ].join(',');
                 
                 csvContent += row + '\n';
@@ -2536,195 +2492,44 @@
             const link = document.createElement("a");
             const url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
-            link.setAttribute("download", `${filename}.csv`);
+            link.setAttribute("download", `attack_techniques_${new Date().toISOString().slice(0,10)}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
-            // Add to history
-            addToExportHistory(attackType, filename, 'csv');
-            showNotification(`CSV file exported successfully!`, 'success');
+            showNotification('CSV file exported successfully!', 'success');
         }
 
-        // Export to Excel function
-        function exportToExcel(attackType, filename) {
-            let dataToExport = techniques;
-            if (attackType !== 'all') {
-                dataToExport = techniques.filter(t => t.attackType === attackType);
-            }
-            
-            if (dataToExport.length === 0) {
-                showNotification('No data to export for the selected attack type.', 'error');
+        // Export to JSON
+        function exportToJSON() {
+            if (techniques.length === 0) {
+                showNotification('No data to export.', 'error');
                 return;
             }
             
-            // Prepare data for Excel
-            const excelData = dataToExport.map(technique => ({
-                'Technique ID': technique.id,
-                'Technique Name': technique.name,
-                'Attack Type': formatAttackType(technique.attackType),
-                'Tactic': formatTactic(technique.tactic),
-                'Description': technique.description,
-                'Forensic Evidence': technique.forensicEvidence,
-                'Logging Control': technique.loggingControl,
-                'Audit Question': technique.auditQuestion,
-                'Mitigation': technique.mitigation || 'N/A'
-            }));
+            // Create JSON content
+            const exportData = {
+                exportDate: new Date().toISOString(),
+                techniques: techniques
+            };
             
-            // Create worksheet
-            const worksheet = XLSX.utils.json_to_sheet(excelData);
-            
-            // Create workbook and add the worksheet
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Attack Techniques");
-            
-            // Generate Excel file and trigger download
-            XLSX.writeFile(workbook, `${filename}.xlsx`);
-            
-            // Add to history
-            addToExportHistory(attackType, filename, 'xlsx');
-            showNotification(`Excel file exported successfully!`, 'success');
-        }
-
-        // Export incident response checklist
-        function exportChecklist(attackType, filename) {
-            const dataToExport = techniques.filter(t => t.attackType === attackType);
-            
-            if (dataToExport.length === 0) {
-                showNotification('No data to export for the selected attack type.', 'error');
-                return;
-            }
-            
-            // Create checklist content
-            let checklistContent = `INCIDENT RESPONSE CHECKLIST - ${formatAttackType(attackType).toUpperCase()}\n\n`;
-            checklistContent += "Generated: " + new Date().toLocaleString() + "\n";
-            checklistContent += "==========================================\n\n";
-            
-            checklistContent += "IMMEDIATE ACTIONS\n";
-            checklistContent += "-----------------\n";
-            checklistContent += "☐ Isolate affected systems from the network\n";
-            checklistContent += "☐ Preserve evidence (memory, disk, logs)\n";
-            checklistContent += "☐ Activate incident response team\n";
-            checklistContent += "☐ Notify appropriate stakeholders\n";
-            checklistContent += "☐ Document timeline of events\n\n";
-            
-            checklistContent += "FORENSIC EVIDENCE COLLECTION\n";
-            checklistContent += "---------------------------\n";
-            
-            // Extract unique evidence types
-            const evidenceTypes = new Set();
-            dataToExport.forEach(technique => {
-                const evidenceList = technique.forensicEvidence.split(',').map(e => e.trim());
-                evidenceList.forEach(evidence => evidenceTypes.add(evidence));
-            });
-            
-            evidenceTypes.forEach(evidence => {
-                checklistContent += `☐ ${evidence}\n`;
-            });
-            
-            checklistContent += "\nTECHNIQUES AND MITIGATIONS\n";
-            checklistContent += "-------------------------\n";
-            
-            dataToExport.forEach(technique => {
-                checklistContent += `\n${technique.id}: ${technique.name}\n`;
-                checklistContent += `Tactic: ${formatTactic(technique.tactic)}\n`;
-                checklistContent += `Audit Question: ${technique.auditQuestion}\n`;
-                checklistContent += `Mitigation: ${technique.mitigation || 'N/A'}\n`;
-                checklistContent += `Evidence: ${technique.forensicEvidence}\n`;
-            });
-            
-            checklistContent += "\nPOST-INCIDENT ACTIVITIES\n";
-            checklistContent += "-----------------------\n";
-            checklistContent += "☐ Conduct lessons learned session\n";
-            checklistContent += "☐ Update security controls and policies\n";
-            checklistContent += "☐ Enhance monitoring and detection capabilities\n";
-            checklistContent += "☐ Update incident response plan\n";
-            checklistContent += "☐ Provide additional training if needed\n";
+            const jsonContent = JSON.stringify(exportData, null, 2);
             
             // Create and download file
-            const blob = new Blob([checklistContent], { type: 'text/plain;charset=utf-8;' });
+            const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
             const link = document.createElement("a");
             const url = URL.createObjectURL(blob);
             link.setAttribute("href", url);
-            link.setAttribute("download", `${filename}.txt`);
+            link.setAttribute("download", `attack_techniques_${new Date().toISOString().slice(0,10)}.json`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             
-            // Add to history
-            addToExportHistory(attackType, filename, 'txt');
-            showNotification(`Incident response checklist generated successfully!`, 'success');
+            showNotification('JSON file exported successfully!', 'success');
         }
 
-        // Export forensic evidence checklist
-        function exportForensicChecklist(attackType, filename) {
-            const dataToExport = techniques.filter(t => t.attackType === attackType);
-            
-            if (dataToExport.length === 0) {
-                showNotification('No data to export for the selected attack type.', 'error');
-                return;
-            }
-            
-            // Create forensic checklist content
-            let checklistContent = `FORENSIC EVIDENCE COLLECTION CHECKLIST - ${formatAttackType(attackType).toUpperCase()}\n\n`;
-            checklistContent += "Generated: " + new Date().toLocaleString() + "\n";
-            checklistContent += "==========================================\n\n";
-            
-            // Group evidence by category
-            const evidenceCategories = {
-                "Memory Evidence": [],
-                "Disk Evidence": [],
-                "Network Evidence": [],
-                "Log Evidence": [],
-                "Other Evidence": []
-            };
-            
-            // Extract and categorize evidence
-            dataToExport.forEach(technique => {
-                const evidenceList = technique.forensicEvidence.split(',').map(e => e.trim());
-                
-                evidenceList.forEach(evidence => {
-                    let categorized = false;
-                    
-                    // Categorize evidence
-                    if (evidence.toLowerCase().includes('memory') || 
-                        evidence.toLowerCase().includes('process') || 
-                        evidence.toLowerCase().includes('ram')) {
-                        evidenceCategories["Memory Evidence"].push(evidence);
-                        categorized = true;
-                    }
-                    
-                    if (evidence.toLowerCase().includes('file') || 
-                        evidence.toLowerCase().includes('disk') || 
-                        evidence.toLowerCase().includes('registry') ||
-                        evidence.toLowerCase().includes('prefetch')) {
-                        evidenceCategories["Disk Evidence"].push(evidence);
-                        categorized = true;
-                    }
-                    
-                    if (evidence.toLowerCase().includes('network') || 
-                        evidence.toLowerCase().includes('connection') || 
-                        evidence.toLowerCase().includes('packet') ||
-                        evidence.toLowerCase().includes('traffic')) {
-                        evidenceCategories["Network Evidence"].push(evidence);
-                        categorized = true;
-                    }
-                    
-                    if (evidence.toLowerCase().includes('log') || 
-                        evidence.toLowerCase().includes('event') || 
-                        evidence.toLowerCase().includes('audit')) {
-                        evidenceCategories["Log Evidence"].push(evidence);
-                        categorized = true;
-                    }
-                    
-                    if (!categorized) {
-                        evidenceCategories["Other Evidence"].push(evidence);
-                    }
-                });
-            });
-            
         // Helper functions
         function getAttackTypeIcon(attackType) {
             switch(attackType) {
