@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATT&CK Forensic Platform - Multi-Input Management</title>
+    <title>ATT&CK Forensic Platform - Complete 13 Techniques</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -27,6 +27,8 @@
             --databreach-color: #3498db;
             --cloud-color: #9b59b6;
             --auth-color: #f39c12;
+            --malware-color: #1abc9c;
+            --phishing-color: #d35400;
         }
 
         * {
@@ -83,6 +85,7 @@
         .nav ul {
             display: flex;
             gap: 20px;
+            list-style: none;
         }
 
         .nav-link {
@@ -90,6 +93,7 @@
             padding: 8px 15px;
             border-radius: 4px;
             font-weight: 500;
+            text-decoration: none;
         }
 
         .nav-link.active, .nav-link:hover {
@@ -102,6 +106,8 @@
             padding: 8px 15px;
             border-radius: 4px;
             font-weight: 500;
+            border: none;
+            cursor: pointer;
         }
 
         .admin-btn:hover {
@@ -176,6 +182,14 @@
             background-color: var(--auth-color);
         }
 
+        .technique-header.malware {
+            background-color: var(--malware-color);
+        }
+
+        .technique-header.phishing {
+            background-color: var(--phishing-color);
+        }
+
         .technique-header h3 {
             margin: 0;
             font-size: 1.2rem;
@@ -215,6 +229,7 @@
             flex-direction: column;
             gap: 8px;
             margin-top: 5px;
+            list-style: none;
         }
 
         .item-list li {
@@ -305,6 +320,8 @@
             background: none;
             color: white;
             font-size: 1.2rem;
+            border: none;
+            cursor: pointer;
         }
 
         .admin-tabs {
@@ -316,6 +333,8 @@
             padding: 15px 20px;
             cursor: pointer;
             transition: var(--transition);
+            border: none;
+            background: none;
         }
 
         .admin-tab.active {
@@ -568,10 +587,12 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            list-style: none;
         }
 
         .footer-section a {
             color: var(--light-color);
+            text-decoration: none;
         }
 
         .footer-section a:hover {
@@ -622,6 +643,73 @@
             to { transform: translateX(100%); opacity: 0; }
         }
 
+        /* Checklist Styles */
+        .checklist-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .checklist-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: var(--light-color);
+            border-radius: 4px;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-top: 3px;
+        }
+
+        .checklist-item label {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .checklist-item.completed {
+            background-color: #e8f6f3;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .checklist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checklist-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .checklist-progress {
+            height: 6px;
+            background-color: var(--light-color);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .checklist-progress-bar {
+            height: 100%;
+            background-color: var(--success-color);
+            transition: width 0.3s ease;
+        }
+
         /* Responsive Styles */
         @media (max-width: 992px) {
             .techniques-grid {
@@ -660,6 +748,29 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Button styles */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .print-btn {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .clear-btn {
+            background-color: var(--light-color);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
     </style>
 </head>
 <body>
@@ -673,9 +784,9 @@
             <nav class="nav">
                 <ul>
                     <li><a href="#" class="nav-link active" data-tab="dashboard">Dashboard</a></li>
-                    <li><a href="#" class="nav-link" data-tab="techniques">Attack Techniques</a></li>
+                    <li><a href="#" class="nav-link" data-tab="techniques">Attack Techniques (13)</a></li>
                     <li><a href="#" class="nav-link" data-tab="evidence">Evidence Matrix</a></li>
-                    <li><a href="#" class="nav-link" data-tab="export">Export</a></li>
+                    <li><a href="#" class="nav-link" data-tab="export">Export & Checklists</a></li>
                 </ul>
             </nav>
             <div class="admin-section">
@@ -740,7 +851,7 @@
                 
                 <div class="content-card" style="background-color: var(--card-bg); border-radius: 8px; box-shadow: var(--shadow); padding: 25px; margin-bottom: 30px;">
                     <h3 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); color: var(--primary-color);">
-                        Recent Techniques
+                        All 13 MITRE ATT&CK Techniques
                     </h3>
                     <div id="recent-techniques" class="technique-list" style="display: flex; flex-direction: column; gap: 15px;">
                         <!-- Recent techniques will be loaded here -->
@@ -751,8 +862,8 @@
             <!-- Techniques Tab -->
             <section id="techniques" class="tab-content">
                 <div class="section-header">
-                    <h2>Attack Techniques</h2>
-                    <p>Browse techniques with detailed forensic evidence, mitigations, controls, and audit questions</p>
+                    <h2>Attack Techniques (13 Total)</h2>
+                    <p>Browse all 13 MITRE ATT&CK techniques with detailed forensic evidence, mitigations, controls, and audit questions</p>
                     <div class="search-box">
                         <i class="fas fa-search"></i>
                         <input type="text" id="technique-search" placeholder="Search techniques by name, ID, evidence, or controls...">
@@ -768,6 +879,8 @@
                             <option value="databreach">Data Breach</option>
                             <option value="cloud">Cloud Vulnerability</option>
                             <option value="auth">Authentication Attacks</option>
+                            <option value="malware">Malware</option>
+                            <option value="phishing">Phishing</option>
                         </select>
                     </div>
                     
@@ -799,7 +912,7 @@
             <section id="evidence" class="tab-content">
                 <div class="section-header">
                     <h2>Evidence Matrix</h2>
-                    <p>Mapping attack techniques to required forensic evidence</p>
+                    <p>Mapping all 13 attack techniques to required forensic evidence</p>
                 </div>
                 
                 <div class="content-card" style="background-color: var(--card-bg); border-radius: 8px; box-shadow: var(--shadow); padding: 25px;">
@@ -815,39 +928,86 @@
             <!-- Export Tab -->
             <section id="export" class="tab-content">
                 <div class="section-header">
-                    <h2>Export Data</h2>
-                    <p>Export techniques, evidence, mitigations, controls, and audit questions in various formats</p>
+                    <h2>Export Data & Checklists</h2>
+                    <p>Export techniques and generate forensic investigation checklists</p>
                 </div>
                 
-                <div class="content-card" style="background-color: var(--card-bg); border-radius: 8px; box-shadow: var(--shadow); padding: 25px;">
-                    <h3 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); color: var(--primary-color);">
-                        Export Options
-                    </h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div>
-                            <h4 style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--primary-color);">
-                                <i class="fas fa-file-csv"></i> CSV Export
-                            </h4>
-                            <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--gray-color);">
-                                Export all techniques and their details in CSV format.
-                            </p>
-                            <button id="export-csv" class="btn" style="background-color: var(--secondary-color); color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer;">
-                                <i class="fas fa-download"></i> Export CSV
-                            </button>
-                        </div>
-                        
-                        <div>
-                            <h4 style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--primary-color);">
-                                <i class="fas fa-file-excel"></i> JSON Export
-                            </h4>
-                            <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--gray-color);">
-                                Export all data in JSON format for integration with other tools.
-                            </p>
-                            <button id="export-json" class="btn" style="background-color: var(--success-color); color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer;">
-                                <i class="fas fa-download"></i> Export JSON
-                            </button>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div class="content-card" style="background-color: var(--card-bg); border-radius: 8px; box-shadow: var(--shadow); padding: 25px;">
+                        <h3 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); color: var(--primary-color);">
+                            Export Options
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 20px;">
+                            <div>
+                                <h4 style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--primary-color);">
+                                    <i class="fas fa-file-csv"></i> CSV Export
+                                </h4>
+                                <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--gray-color);">
+                                    Export all 13 techniques and their details in CSV format.
+                                </p>
+                                <button id="export-csv" class="btn" style="background-color: var(--secondary-color); color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer;">
+                                    <i class="fas fa-download"></i> Export CSV
+                                </button>
+                            </div>
+                            
+                            <div>
+                                <h4 style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px; color: var(--primary-color);">
+                                    <i class="fas fa-file-excel"></i> JSON Export
+                                </h4>
+                                <p style="margin-bottom: 15px; font-size: 0.9rem; color: var(--gray-color);">
+                                    Export all data in JSON format for integration with other tools.
+                                </p>
+                                <button id="export-json" class="btn" style="background-color: var(--success-color); color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer;">
+                                    <i class="fas fa-download"></i> Export JSON
+                                </button>
+                            </div>
                         </div>
                     </div>
+                    
+                    <div class="content-card" style="background-color: var(--card-bg); border-radius: 8px; box-shadow: var(--shadow); padding: 25px;">
+                        <h3 style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); color: var(--primary-color);">
+                            Forensic Checklists
+                        </h3>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div>
+                                <label for="checklist-technique" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--primary-color);">
+                                    Select Technique for Checklist:
+                                </label>
+                                <select id="checklist-technique" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                    <option value="">Select a technique</option>
+                                    <!-- Options will be populated by JavaScript -->
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label for="checklist-type" style="display: block; margin-bottom: 8px; font-weight: 500; color: var(--primary-color);">
+                                    Checklist Type:
+                                </label>
+                                <select id="checklist-type" style="width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px;">
+                                    <option value="full">Full Checklist (All Items)</option>
+                                    <option value="evidence">Evidence Collection Only</option>
+                                    <option value="mitigation">Mitigation Actions Only</option>
+                                    <option value="audit">Audit Questions Only</option>
+                                </select>
+                            </div>
+                            
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <button id="generate-checklist" class="btn" style="background-color: var(--secondary-color); color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer;">
+                                    <i class="fas fa-clipboard-list"></i> Generate Checklist
+                                </button>
+                                <button id="print-checklist" class="btn" style="background-color: var(--light-color); color: var(--text-color); padding: 10px 20px; border-radius: 4px; border: 1px solid var(--border-color); cursor: pointer; display: none;">
+                                    <i class="fas fa-print"></i> Print Checklist
+                                </button>
+                                <button id="clear-checklist" class="btn clear-btn" style="display: none;">
+                                    <i class="fas fa-eraser"></i> Clear All
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="checklist-container" class="checklist-container" style="display: none; margin-top: 30px;">
+                    <!-- Checklist will be generated here -->
                 </div>
             </section>
 
@@ -861,8 +1021,8 @@
                 </div>
                 
                 <div class="admin-tabs">
-                    <div class="admin-tab active" data-admin-tab="add-technique">Add Technique</div>
-                    <div class="admin-tab" data-admin-tab="manage-techniques">Manage Techniques</div>
+                    <button class="admin-tab active" data-admin-tab="add-technique">Add Technique</button>
+                    <button class="admin-tab" data-admin-tab="manage-techniques">Manage Techniques</button>
                 </div>
                 
                 <div class="admin-content">
@@ -892,6 +1052,8 @@
                                         <option value="databreach">Data Breach</option>
                                         <option value="cloud">Cloud Vulnerability</option>
                                         <option value="auth">Authentication Attacks</option>
+                                        <option value="malware">Malware</option>
+                                        <option value="phishing">Phishing</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -1082,7 +1244,7 @@
     </footer>
 
     <script>
-        // Sample data with multiple items for each field
+        // COMPLETE 13 ATT&CK TECHNIQUES
         let techniques = [
             {
                 id: "T1486",
@@ -1124,7 +1286,7 @@
             {
                 id: "T1530",
                 name: "Data from Cloud Storage",
-                attackType: "databreach",
+                attackType: "cloud",
                 tactic: "collection",
                 description: "Adversaries may access data from cloud storage to collect sensitive information.",
                 evidence: [
@@ -1182,6 +1344,316 @@
                     "Is multi-factor authentication implemented for sensitive accounts?",
                     "Are account lockout thresholds properly configured?"
                 ]
+            },
+            {
+                id: "T1059",
+                name: "Command and Scripting Interpreter",
+                attackType: "malware",
+                tactic: "execution",
+                description: "Adversaries may abuse command and script interpreters to execute commands, scripts, or binaries.",
+                evidence: [
+                    "Unusual command-line executions",
+                    "PowerShell script execution logs",
+                    "Scheduled task creations",
+                    "Process executions from temporary directories"
+                ],
+                mitigation: [
+                    "Disable unnecessary scripting interpreters",
+                    "Use application control/whitelisting",
+                    "Enable command-line auditing",
+                    "Restrict script execution"
+                ],
+                control: [
+                    "Endpoint detection and response (EDR)",
+                    "Script execution monitoring",
+                    "Command-line auditing",
+                    "Process monitoring"
+                ],
+                audit: [
+                    "Is command-line auditing enabled?",
+                    "Are scripting interpreters restricted to authorized users?",
+                    "Is application whitelisting implemented?",
+                    "Are suspicious script executions monitored?"
+                ]
+            },
+            {
+                id: "T1078",
+                name: "Valid Accounts",
+                attackType: "auth",
+                tactic: "initial-access",
+                description: "Adversaries may steal credentials of specific users or use credentials from previous breaches.",
+                evidence: [
+                    "Logins from unusual geographic locations",
+                    "Multiple failed login attempts followed by success",
+                    "Account usage outside business hours",
+                    "Logins from previously unseen devices"
+                ],
+                mitigation: [
+                    "Implement multi-factor authentication",
+                    "Regularly review and disable inactive accounts",
+                    "Monitor for abnormal account usage",
+                    "Implement privileged access management"
+                ],
+                control: [
+                    "Identity and access management systems",
+                    "User behavior analytics",
+                    "Privileged access management",
+                    "Security information and event management"
+                ],
+                audit: [
+                    "Are inactive accounts regularly reviewed and disabled?",
+                    "Is multi-factor authentication enabled for all accounts?",
+                    "Are privileged accounts monitored for abnormal usage?",
+                    "Are failed login attempts properly alerted?"
+                ]
+            },
+            {
+                id: "T1082",
+                name: "System Information Discovery",
+                attackType: "databreach",
+                tactic: "discovery",
+                description: "Adversaries may attempt to get detailed information about the operating system and hardware.",
+                evidence: [
+                    "System information queries in logs",
+                    "Unusual WMI or PowerShell queries",
+                    "Registry queries for system information",
+                    "Network scanning activities"
+                ],
+                mitigation: [
+                    "Segment networks to limit discovery",
+                    "Monitor for suspicious queries",
+                    "Implement host-based firewalls",
+                    "Use deception technology"
+                ],
+                control: [
+                    "Network intrusion detection systems",
+                    "Endpoint detection and response",
+                    "Log aggregation and analysis",
+                    "Security information and event management"
+                ],
+                audit: [
+                    "Are system information queries monitored?",
+                    "Is network segmentation properly implemented?",
+                    "Are suspicious WMI/PowerShell queries alerted?",
+                    "Is network scanning detection enabled?"
+                ]
+            },
+            {
+                id: "T1105",
+                name: "Ingress Tool Transfer",
+                attackType: "malware",
+                tactic: "defense-evasion",
+                description: "Adversaries may transfer tools or files from an external system to a compromised environment.",
+                evidence: [
+                    "Unusual outbound network connections",
+                    "File downloads from suspicious domains",
+                    "Large file transfers to external servers",
+                    "Use of web shells or backdoors"
+                ],
+                mitigation: [
+                    "Implement network segmentation",
+                    "Use application whitelisting",
+                    "Monitor network traffic for anomalies",
+                    "Implement web filtering"
+                ],
+                control: [
+                    "Network intrusion prevention systems",
+                    "Web content filtering",
+                    "Data loss prevention",
+                    "Network traffic analysis"
+                ],
+                audit: [
+                    "Is network segmentation preventing lateral movement?",
+                    "Are unusual file transfers monitored?",
+                    "Is web filtering implemented and updated?",
+                    "Are outbound connections to suspicious domains blocked?"
+                ]
+            },
+            {
+                id: "T1136",
+                name: "Create Account",
+                attackType: "auth",
+                tactic: "persistence",
+                description: "Adversaries may create a new account to maintain access to victim systems.",
+                evidence: [
+                    "Creation of new user accounts",
+                    "Account creation outside business hours",
+                    "Accounts with excessive privileges",
+                    "Accounts with similar names to legitimate users"
+                ],
+                mitigation: [
+                    "Implement account creation policies",
+                    "Regularly review user accounts",
+                    "Monitor for account creation events",
+                    "Implement least privilege principle"
+                ],
+                control: [
+                    "Identity and access management",
+                    "Privileged access management",
+                    "Security information and event management",
+                    "User account auditing"
+                ],
+                audit: [
+                    "Are account creation events properly logged?",
+                    "Are new accounts reviewed within 24 hours?",
+                    "Are excessive privileges monitored?",
+                    "Are account naming conventions enforced?"
+                ]
+            },
+            {
+                id: "T1204",
+                name: "User Execution",
+                attackType: "phishing",
+                tactic: "execution",
+                description: "Adversaries may rely on user interaction to execute malicious code.",
+                evidence: [
+                    "Email attachments from unknown senders",
+                    "Downloads from untrusted websites",
+                    "User consent for elevated privileges",
+                    "Macro-enabled documents"
+                ],
+                mitigation: [
+                    "User awareness training",
+                    "Disable macro execution",
+                    "Implement application whitelisting",
+                    "Use email filtering"
+                ],
+                control: [
+                    "Email security gateways",
+                    "Endpoint protection platforms",
+                    "Web filtering",
+                    "Application control"
+                ],
+                audit: [
+                    "Is user security awareness training conducted regularly?",
+                    "Are macros disabled by default?",
+                    "Is email filtering blocking malicious attachments?",
+                    "Are downloads from untrusted sites restricted?"
+                ]
+            },
+            {
+                id: "T1219",
+                name: "Remote Access Software",
+                attackType: "malware",
+                tactic: "command-and-control",
+                description: "Adversaries may use legitimate desktop support software to gain unauthorized access.",
+                evidence: [
+                    "Installation of remote access tools",
+                    "Unusual remote desktop connections",
+                    "VPN connections from suspicious locations",
+                    "TeamViewer/AnyDesk usage outside business hours"
+                ],
+                mitigation: [
+                    "Monitor for remote access software",
+                    "Restrict remote access to authorized systems",
+                    "Implement network segmentation",
+                    "Use VPN with multi-factor authentication"
+                ],
+                control: [
+                    "Network monitoring",
+                    "Endpoint detection and response",
+                    "VPN monitoring",
+                    "Security information and event management"
+                ],
+                audit: [
+                    "Is remote access software installation monitored?",
+                    "Are remote desktop connections logged and reviewed?",
+                    "Is VPN usage restricted to authorized users?",
+                    "Are abnormal remote access patterns alerted?"
+                ]
+            },
+            {
+                id: "T1485",
+                name: "Data Destruction",
+                attackType: "ransomware",
+                tactic: "impact",
+                description: "Adversaries may destroy data and files on specific systems or in large numbers.",
+                evidence: [
+                    "Mass file deletion events",
+                    "Disk formatting activities",
+                    "System restore point deletions",
+                    "Backup file destruction"
+                ],
+                mitigation: [
+                    "Implement robust backup strategy",
+                    "Use file integrity monitoring",
+                    "Implement access controls",
+                    "Monitor for mass deletion events"
+                ],
+                control: [
+                    "Backup and recovery systems",
+                    "File integrity monitoring",
+                    "Security information and event management",
+                    "Endpoint protection"
+                ],
+                audit: [
+                    "Are backups tested regularly?",
+                    "Is file integrity monitoring implemented?",
+                    "Are mass deletion events alerted?",
+                    "Are system restore points protected?"
+                ]
+            },
+            {
+                id: "T1496",
+                name: "Resource Hijacking",
+                attackType: "malware",
+                tactic: "impact",
+                description: "Adversaries may leverage compromised resources for cryptocurrency mining.",
+                evidence: [
+                    "High CPU usage by unknown processes",
+                    "Cryptocurrency mining pool connections",
+                    "Unusual process spawning",
+                    "Increased power consumption"
+                ],
+                mitigation: [
+                    "Monitor system resource usage",
+                    "Implement application whitelisting",
+                    "Use endpoint protection",
+                    "Segment cryptocurrency mining traffic"
+                ],
+                control: [
+                    "Endpoint detection and response",
+                    "Network traffic analysis",
+                    "Process monitoring",
+                    "System resource monitoring"
+                ],
+                audit: [
+                    "Is CPU usage monitored for anomalies?",
+                    "Are cryptocurrency mining pool connections blocked?",
+                    "Is process whitelisting implemented?",
+                    "Are unknown processes investigated?"
+                ]
+            },
+            {
+                id: "T1566",
+                name: "Phishing",
+                attackType: "phishing",
+                tactic: "initial-access",
+                description: "Adversaries may send phishing messages to gain access to victim systems.",
+                evidence: [
+                    "Phishing emails in mail logs",
+                    "User-reported phishing attempts",
+                    "URL clicks on malicious links",
+                    "Credential submissions to phishing sites"
+                ],
+                mitigation: [
+                    "User awareness training",
+                    "Implement email filtering",
+                    "Use URL filtering",
+                    "Enable multi-factor authentication"
+                ],
+                control: [
+                    "Email security gateways",
+                    "Web content filtering",
+                    "Phishing simulation tools",
+                    "Security awareness platforms"
+                ],
+                audit: [
+                    "Is phishing simulation conducted regularly?",
+                    "Are phishing emails properly filtered?",
+                    "Is user awareness training up to date?",
+                    "Are credential submissions to unknown sites blocked?"
+                ]
             }
         ];
 
@@ -1194,6 +1666,7 @@
         let filteredTechniques = [...techniques];
         let isEditing = false;
         let currentEditingId = null;
+        let checklistData = [];
 
         // Multi-input items storage
         let currentEvidenceItems = [];
@@ -1227,9 +1700,14 @@
         const evidenceMatrixContainer = document.getElementById('evidence-matrix-container');
         const exportCsvBtn = document.getElementById('export-csv');
         const exportJsonBtn = document.getElementById('export-json');
+        const checklistTechniqueSelect = document.getElementById('checklist-technique');
+        const checklistTypeSelect = document.getElementById('checklist-type');
+        const generateChecklistBtn = document.getElementById('generate-checklist');
+        const printChecklistBtn = document.getElementById('print-checklist');
+        const clearChecklistBtn = document.getElementById('clear-checklist');
+        const checklistContainer = document.getElementById('checklist-container');
 
         // Form elements
-        const formTitle = document.getElementById('form-title');
         const currentTechniqueId = document.getElementById('current-technique-id');
         const submitBtn = document.getElementById('submit-btn');
         const cancelEditBtn = document.getElementById('cancel-edit');
@@ -1252,7 +1730,7 @@
             renderDashboard();
             renderTechniques();
             renderEvidenceMatrix();
-            loadExportHistory();
+            populateChecklistDropdown();
             
             // Check if admin is already logged in
             const savedAdminState = sessionStorage.getItem('isAdmin');
@@ -1263,111 +1741,163 @@
             
             // Setup event listeners for multi-input buttons
             setupMultiInputListeners();
+            
+            // Add event listeners
+            setupEventListeners();
         });
 
-        // Navigation functionality
-        navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // Update active nav link
-                navLinks.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Show corresponding tab content
-                const tabId = this.getAttribute('data-tab');
-                tabContents.forEach(content => {
-                    content.classList.remove('active');
-                    if (content.id === tabId) {
-                        content.classList.add('active');
-                    }
+        function setupEventListeners() {
+            // Navigation functionality
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active nav link
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding tab content
+                    const tabId = this.getAttribute('data-tab');
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === tabId) {
+                            content.classList.add('active');
+                        }
+                    });
                 });
             });
-        });
 
-        // Admin panel functionality
-        adminToggle.addEventListener('click', function() {
-            if (isAdmin) {
-                adminPanel.classList.add('active');
-            } else {
-                loginModal.classList.add('active');
-            }
-        });
-
-        closeAdmin.addEventListener('click', function() {
-            adminPanel.classList.remove('active');
-            resetForm();
-        });
-
-        // Login functionality
-        closeLogin.addEventListener('click', function() {
-            loginModal.classList.remove('active');
-        });
-
-        cancelLogin.addEventListener('click', function() {
-            loginModal.classList.remove('active');
-        });
-
-        confirmLogin.addEventListener('click', function() {
-            const password = document.getElementById('admin-password').value;
-            if (password === ADMIN_PASSWORD) {
-                isAdmin = true;
-                sessionStorage.setItem('isAdmin', 'true');
-                updateAdminUI();
-                loginModal.classList.remove('active');
-                adminPanel.classList.add('active');
-                showNotification('Admin access granted!', 'success');
-            } else {
-                showNotification('Incorrect password. Please try again.', 'error');
-            }
-        });
-
-        // Delete functionality
-        closeDelete.addEventListener('click', function() {
-            deleteModal.classList.remove('active');
-        });
-
-        cancelDelete.addEventListener('click', function() {
-            deleteModal.classList.remove('active');
-        });
-
-        confirmDelete.addEventListener('click', function() {
-            if (currentTechniqueToDelete) {
-                techniques = techniques.filter(t => t.id !== currentTechniqueToDelete);
-                saveTechniques();
-                renderTechniques();
-                renderDashboard();
-                renderEvidenceMatrix();
-                deleteModal.classList.remove('active');
-                currentTechniqueToDelete = null;
-                
-                showNotification('Technique deleted successfully!', 'success');
-            }
-        });
-
-        // Admin tabs functionality
-        adminTabs.forEach(tab => {
-            tab.addEventListener('click', function() {
-                const tabId = this.getAttribute('data-admin-tab');
-                
-                // Update active admin tab
-                adminTabs.forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Show corresponding admin tab content
-                adminTabContents.forEach(content => {
-                    content.classList.remove('active');
-                    if (content.id === tabId) {
-                        content.classList.add('active');
-                    }
-                });
-                
-                // If manage techniques tab is active, render the list
-                if (tabId === 'manage-techniques') {
-                    renderAdminTechniquesList();
+            // Admin panel functionality
+            adminToggle.addEventListener('click', function() {
+                if (isAdmin) {
+                    adminPanel.classList.add('active');
+                } else {
+                    loginModal.classList.add('active');
                 }
             });
-        });
+
+            closeAdmin.addEventListener('click', function() {
+                adminPanel.classList.remove('active');
+                resetForm();
+            });
+
+            // Login functionality
+            closeLogin.addEventListener('click', function() {
+                loginModal.classList.remove('active');
+            });
+
+            cancelLogin.addEventListener('click', function() {
+                loginModal.classList.remove('active');
+            });
+
+            confirmLogin.addEventListener('click', function() {
+                const password = document.getElementById('admin-password').value;
+                if (password === ADMIN_PASSWORD) {
+                    isAdmin = true;
+                    sessionStorage.setItem('isAdmin', 'true');
+                    updateAdminUI();
+                    loginModal.classList.remove('active');
+                    adminPanel.classList.add('active');
+                    showNotification('Admin access granted!', 'success');
+                } else {
+                    showNotification('Incorrect password. Please try again.', 'error');
+                }
+            });
+
+            // Delete functionality
+            closeDelete.addEventListener('click', function() {
+                deleteModal.classList.remove('active');
+            });
+
+            cancelDelete.addEventListener('click', function() {
+                deleteModal.classList.remove('active');
+            });
+
+            confirmDelete.addEventListener('click', function() {
+                if (currentTechniqueToDelete) {
+                    techniques = techniques.filter(t => t.id !== currentTechniqueToDelete);
+                    saveTechniques();
+                    filteredTechniques = [...techniques];
+                    renderTechniques();
+                    renderDashboard();
+                    renderEvidenceMatrix();
+                    deleteModal.classList.remove('active');
+                    currentTechniqueToDelete = null;
+                    
+                    showNotification('Technique deleted successfully!', 'success');
+                }
+            });
+
+            // Admin tabs functionality
+            adminTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-admin-tab');
+                    
+                    // Update active admin tab
+                    adminTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding admin tab content
+                    adminTabContents.forEach(content => {
+                        content.classList.remove('active');
+                        if (content.id === tabId) {
+                            content.classList.add('active');
+                        }
+                    });
+                    
+                    // If manage techniques tab is active, render the list
+                    if (tabId === 'manage-techniques') {
+                        renderAdminTechniquesList();
+                    }
+                });
+            });
+
+            // Technique form submission
+            techniqueForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                handleFormSubmit();
+            });
+
+            // Cancel edit button
+            cancelEditBtn.addEventListener('click', function() {
+                resetForm();
+            });
+
+            // Search functionality
+            techniqueSearch.addEventListener('input', function() {
+                filterTechniques();
+            });
+
+            attackTypeFilter.addEventListener('change', function() {
+                filterTechniques();
+            });
+
+            tacticFilter.addEventListener('change', function() {
+                filterTechniques();
+            });
+
+            // Export functionality
+            exportCsvBtn.addEventListener('click', function() {
+                exportToCSV();
+            });
+
+            exportJsonBtn.addEventListener('click', function() {
+                exportToJSON();
+            });
+
+            // Checklist functionality
+            generateChecklistBtn.addEventListener('click', function() {
+                generateChecklist();
+            });
+
+            printChecklistBtn.addEventListener('click', function() {
+                window.print();
+            });
+
+            clearChecklistBtn.addEventListener('click', function() {
+                clearChecklist();
+            });
+        }
 
         // Setup multi-input listeners
         function setupMultiInputListeners() {
@@ -1460,30 +1990,30 @@
             const container = getItemsContainer(type);
             container.innerHTML = '';
             
-            if (items.length === 0) {
+            if (items && items.length === 0) {
                 container.innerHTML = '<div class="empty-state">No items added yet</div>';
                 return;
             }
             
-            items.forEach(item => {
-                const itemEntry = document.createElement('div');
-                itemEntry.className = 'item-entry';
-                
-                itemEntry.innerHTML = `
-                    <input type="text" class="item-input" value="${item}" placeholder="Enter ${type} item...">
-                    <button type="button" class="remove-item-btn">
-                        <i class="fas fa-times"></i>
-                    </button>
-                `;
-                
-                container.appendChild(itemEntry);
-            });
+            if (items) {
+                items.forEach(item => {
+                    const itemEntry = document.createElement('div');
+                    itemEntry.className = 'item-entry';
+                    
+                    itemEntry.innerHTML = `
+                        <input type="text" class="item-input" value="${item}" placeholder="Enter ${type} item...">
+                        <button type="button" class="remove-item-btn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    
+                    container.appendChild(itemEntry);
+                });
+            }
         }
 
-        // Technique form submission
-        techniqueForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
+        // Handle form submission
+        function handleFormSubmit() {
             // Get current values from multi-inputs
             updateMultiInputState();
             
@@ -1526,6 +2056,7 @@
                 if (index !== -1) {
                     techniques[index] = techniqueData;
                     saveTechniques();
+                    filteredTechniques = [...techniques];
                     renderTechniques();
                     renderDashboard();
                     renderEvidenceMatrix();
@@ -1542,6 +2073,7 @@
                 
                 techniques.push(techniqueData);
                 saveTechniques();
+                filteredTechniques = [...techniques];
                 renderTechniques();
                 renderDashboard();
                 renderEvidenceMatrix();
@@ -1550,17 +2082,7 @@
                 techniqueForm.reset();
                 clearMultiInputs();
             }
-        });
-
-        // Cancel edit button
-        cancelEditBtn.addEventListener('click', function() {
-            resetForm();
-        });
-
-        // Form reset handler
-        techniqueForm.addEventListener('reset', function() {
-            clearMultiInputs();
-        });
+        }
 
         // Clear all multi-inputs
         function clearMultiInputs() {
@@ -1632,44 +2154,267 @@
             adminPanel.scrollTop = 0;
         }
 
-        // Search functionality
-        techniqueSearch.addEventListener('input', function() {
-            filterTechniques();
-        });
+        // Populate checklist dropdown
+        function populateChecklistDropdown() {
+            checklistTechniqueSelect.innerHTML = '<option value="">Select a technique</option>';
+            
+            techniques.forEach(technique => {
+                const option = document.createElement('option');
+                option.value = technique.id;
+                option.textContent = `${technique.id} - ${technique.name}`;
+                checklistTechniqueSelect.appendChild(option);
+            });
+        }
 
-        attackTypeFilter.addEventListener('change', function() {
-            filterTechniques();
-        });
+        // Generate checklist
+        function generateChecklist() {
+            const techniqueId = checklistTechniqueSelect.value;
+            const checklistType = checklistTypeSelect.value;
+            
+            if (!techniqueId) {
+                showNotification('Please select a technique first.', 'error');
+                return;
+            }
+            
+            const technique = techniques.find(t => t.id === techniqueId);
+            if (!technique) return;
+            
+            checklistData = [];
+            let totalItems = 0;
+            let completedItems = 0;
+            
+            // Create checklist based on selected type
+            checklistContainer.innerHTML = '';
+            
+            const checklistHeader = document.createElement('div');
+            checklistHeader.className = 'checklist-header';
+            checklistHeader.innerHTML = `
+                <h3>Forensic Checklist: ${technique.name} (${technique.id})</h3>
+                <div class="checklist-stats">
+                    <span>Total Items: <span id="total-items">0</span></span>
+                    <span>Completed: <span id="completed-items">0</span></span>
+                    <span>Progress: <span id="progress-percent">0%</span></span>
+                </div>
+            `;
+            checklistContainer.appendChild(checklistHeader);
+            
+            const progressBar = document.createElement('div');
+            progressBar.className = 'checklist-progress';
+            progressBar.innerHTML = '<div class="checklist-progress-bar" style="width: 0%"></div>';
+            checklistContainer.appendChild(progressBar);
+            
+            // Add sections based on checklist type
+            if (checklistType === 'evidence' || checklistType === 'full') {
+                addChecklistSection('evidence', 'Forensic Evidence Required', technique.evidence);
+            }
+            
+            if (checklistType === 'mitigation' || checklistType === 'full') {
+                addChecklistSection('mitigation', 'Mitigation Actions', technique.mitigation);
+            }
+            
+            if (checklistType === 'full') {
+                addChecklistSection('control', 'Security Controls', technique.control);
+                addChecklistSection('audit', 'Audit Questions', technique.audit);
+            }
+            
+            if (checklistType === 'audit') {
+                addChecklistSection('audit', 'Audit Questions', technique.audit);
+            }
+            
+            // Show checklist container and buttons
+            checklistContainer.style.display = 'block';
+            printChecklistBtn.style.display = 'inline-block';
+            clearChecklistBtn.style.display = 'inline-block';
+            
+            // Load saved checklist state from localStorage
+            loadChecklistState(techniqueId, checklistType);
+        }
 
-        tacticFilter.addEventListener('change', function() {
-            filterTechniques();
-        });
+        // Add checklist section
+        function addChecklistSection(type, title, items) {
+            const section = document.createElement('div');
+            section.className = 'checklist-section';
+            section.id = `checklist-${type}`;
+            
+            const sectionHeader = document.createElement('h4');
+            sectionHeader.innerHTML = `<i class="fas fa-${getIconForType(type)}"></i> ${title} (${items.length})`;
+            
+            const itemsContainer = document.createElement('div');
+            
+            items.forEach((item, index) => {
+                const itemId = `${type}-${index}`;
+                checklistData.push({
+                    id: itemId,
+                    type: type,
+                    text: item,
+                    checked: false
+                });
+                
+                const checklistItem = document.createElement('div');
+                checklistItem.className = 'checklist-item';
+                checklistItem.id = `item-${itemId}`;
+                
+                checklistItem.innerHTML = `
+                    <input type="checkbox" id="checkbox-${itemId}" data-id="${itemId}">
+                    <label for="checkbox-${itemId}">${item}</label>
+                `;
+                
+                itemsContainer.appendChild(checklistItem);
+            });
+            
+            section.appendChild(sectionHeader);
+            section.appendChild(itemsContainer);
+            checklistContainer.appendChild(section);
+            
+            // Add event listeners to checkboxes
+            itemsContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const itemId = this.getAttribute('data-id');
+                    const itemElement = document.getElementById(`item-${itemId}`);
+                    
+                    if (this.checked) {
+                        itemElement.classList.add('completed');
+                        checklistData.find(item => item.id === itemId).checked = true;
+                    } else {
+                        itemElement.classList.remove('completed');
+                        checklistData.find(item => item.id === itemId).checked = false;
+                    }
+                    
+                    updateChecklistProgress();
+                    saveChecklistState();
+                });
+            });
+        }
 
-        // Export functionality
-        exportCsvBtn.addEventListener('click', function() {
-            exportToCSV();
-        });
+        // Get icon for checklist type
+        function getIconForType(type) {
+            switch(type) {
+                case 'evidence': return 'search';
+                case 'mitigation': return 'shield-alt';
+                case 'control': return 'clipboard-check';
+                case 'audit': return 'question-circle';
+                default: return 'check';
+            }
+        }
 
-        exportJsonBtn.addEventListener('click', function() {
-            exportToJSON();
-        });
+        // Update checklist progress
+        function updateChecklistProgress() {
+            const totalItems = checklistData.length;
+            const completedItems = checklistData.filter(item => item.checked).length;
+            const progressPercent = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
+            
+            document.getElementById('total-items').textContent = totalItems;
+            document.getElementById('completed-items').textContent = completedItems;
+            document.getElementById('progress-percent').textContent = `${progressPercent}%`;
+            
+            const progressBar = document.querySelector('.checklist-progress-bar');
+            if (progressBar) {
+                progressBar.style.width = `${progressPercent}%`;
+            }
+        }
+
+        // Save checklist state to localStorage
+        function saveChecklistState() {
+            const techniqueId = checklistTechniqueSelect.value;
+            const checklistType = checklistTypeSelect.value;
+            
+            if (!techniqueId) return;
+            
+            const checklistState = {
+                techniqueId: techniqueId,
+                checklistType: checklistType,
+                data: checklistData,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem(`checklist-${techniqueId}-${checklistType}`, JSON.stringify(checklistState));
+        }
+
+        // Load checklist state from localStorage
+        function loadChecklistState(techniqueId, checklistType) {
+            const savedState = localStorage.getItem(`checklist-${techniqueId}-${checklistType}`);
+            
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                checklistData = state.data;
+                
+                // Update UI
+                checklistData.forEach(item => {
+                    const checkbox = document.getElementById(`checkbox-${item.id}`);
+                    const itemElement = document.getElementById(`item-${item.id}`);
+                    
+                    if (checkbox && itemElement) {
+                        checkbox.checked = item.checked;
+                        if (item.checked) {
+                            itemElement.classList.add('completed');
+                        }
+                    }
+                });
+                
+                updateChecklistProgress();
+            } else {
+                // Initialize with all unchecked
+                checklistData.forEach(item => {
+                    item.checked = false;
+                });
+                updateChecklistProgress();
+            }
+        }
+
+        // Clear checklist
+        function clearChecklist() {
+            if (!confirm('Clear all checkboxes in this checklist?')) return;
+            
+            checklistData.forEach(item => {
+                item.checked = false;
+                const checkbox = document.getElementById(`checkbox-${item.id}`);
+                const itemElement = document.getElementById(`item-${item.id}`);
+                
+                if (checkbox) checkbox.checked = false;
+                if (itemElement) itemElement.classList.remove('completed');
+            });
+            
+            updateChecklistProgress();
+            saveChecklistState();
+            
+            showNotification('Checklist cleared!', 'info');
+        }
+
+        // Filter techniques based on search and filters
+        function filterTechniques() {
+            const searchTerm = techniqueSearch.value.toLowerCase();
+            const selectedAttackType = attackTypeFilter.value;
+            const selectedTactic = tacticFilter.value;
+            
+            filteredTechniques = techniques.filter(technique => {
+                const matchesSearch = 
+                    technique.name.toLowerCase().includes(searchTerm) ||
+                    technique.id.toLowerCase().includes(searchTerm) ||
+                    technique.description.toLowerCase().includes(searchTerm) ||
+                    technique.evidence.some(e => e.toLowerCase().includes(searchTerm)) ||
+                    technique.control.some(c => c.toLowerCase().includes(searchTerm));
+                
+                const matchesAttackType = selectedAttackType === 'all' || technique.attackType === selectedAttackType;
+                const matchesTactic = selectedTactic === 'all' || technique.tactic === selectedTactic;
+                
+                return matchesSearch && matchesAttackType && matchesTactic;
+            });
+            
+            renderTechniques();
+        }
 
         // Load techniques from localStorage
         function loadTechniques() {
             const storedTechniques = localStorage.getItem('attack-techniques');
             if (storedTechniques) {
                 techniques = JSON.parse(storedTechniques);
+                filteredTechniques = [...techniques];
             }
         }
 
         // Save techniques to localStorage
         function saveTechniques() {
             localStorage.setItem('attack-techniques', JSON.stringify(techniques));
-        }
-
-        // Load export history from localStorage
-        function loadExportHistory() {
-            // Implementation for export history
         }
 
         // Update admin UI based on login state
@@ -1731,7 +2476,7 @@
             
             // Render recent techniques
             recentTechniquesContainer.innerHTML = '';
-            const recentTechniques = techniques.slice(0, 3);
+            const recentTechniques = techniques.slice(0, 13); // Show all 13
             recentTechniques.forEach(technique => {
                 const techniqueItem = document.createElement('div');
                 techniqueItem.className = 'technique-item';
@@ -1745,29 +2490,6 @@
                 `;
                 recentTechniquesContainer.appendChild(techniqueItem);
             });
-        }
-
-        // Filter techniques based on search and filters
-        function filterTechniques() {
-            const searchTerm = techniqueSearch.value.toLowerCase();
-            const selectedAttackType = attackTypeFilter.value;
-            const selectedTactic = tacticFilter.value;
-            
-            filteredTechniques = techniques.filter(technique => {
-                const matchesSearch = 
-                    technique.name.toLowerCase().includes(searchTerm) ||
-                    technique.id.toLowerCase().includes(searchTerm) ||
-                    technique.description.toLowerCase().includes(searchTerm) ||
-                    technique.evidence.some(e => e.toLowerCase().includes(searchTerm)) ||
-                    technique.control.some(c => c.toLowerCase().includes(searchTerm));
-                
-                const matchesAttackType = selectedAttackType === 'all' || technique.attackType === selectedAttackType;
-                const matchesTactic = selectedTactic === 'all' || technique.tactic === selectedTactic;
-                
-                return matchesSearch && matchesAttackType && matchesTactic;
-            });
-            
-            renderTechniques();
         }
 
         // Render techniques to the page
@@ -1983,6 +2705,7 @@
             // Create JSON content
             const exportData = {
                 exportDate: new Date().toISOString(),
+                totalTechniques: techniques.length,
                 techniques: techniques
             };
             
@@ -2015,7 +2738,9 @@
                 'ransomware': 'Ransomware',
                 'databreach': 'Data Breach',
                 'cloud': 'Cloud Vulnerability',
-                'auth': 'Authentication Attacks'
+                'auth': 'Authentication Attacks',
+                'malware': 'Malware',
+                'phishing': 'Phishing'
             };
             return typeMap[attackType] || attackType;
         }
