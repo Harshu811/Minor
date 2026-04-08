@@ -2370,8 +2370,8 @@
         const statSize = document.getElementById('stat-size');
 
         // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            loadTechniques();
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadTechniques();
             renderDashboard();
             renderTacticsStructure();
             renderEvidenceMatrix();
@@ -3127,11 +3127,23 @@
         }
 
         // Load techniques from localStorage
-        function loadTechniques() {
+        async function loadTechniques() {
             const storedTechniques = localStorage.getItem('attack-techniques');
             if (storedTechniques) {
                 techniques = JSON.parse(storedTechniques);
                 filteredTechniques = [...techniques];
+                return;
+            }
+            try {
+                const response = await fetch('techniques.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    techniques = data.techniques || data;
+                    filteredTechniques = [...techniques];
+                    saveTechniques();
+                }
+            } catch (e) {
+                console.error('Failed to load techniques from JSON:', e);
             }
         }
 
